@@ -32,14 +32,13 @@ driver.Url = "https://logbook.itstep.org/#/homeWork";
 
 driver.WaitElementDisappear(By.ClassName("loader"));
 
-if(driver.ElementExists(By.ClassName("hw-md__close")))
+if (driver.ElementVisible(By.ClassName("hw-md__close")))
     driver.FindElement(By.ClassName("hw-md__close")).Click();
 
-driver.FindElement(By.Id("select_value_label_498")).Click();
+driver.FindElement(By.CssSelector("md-select[ng-model='filter.group']")).Click();
 
 var groupLink = driver.FindElement(By.XPath($"//md-option[text()='{GROUP_NAME}' and @ng-value='value.id_tgroups']"));
 var id = groupLink.GetAttribute("id");
-Console.WriteLine($"Id: {id}");
 
 Thread.Sleep(1000);
 
@@ -62,10 +61,10 @@ foreach (var trElement in studentTrs)
     int notCheckedHomeworksCount = homeworkElements.Count(element => element.FindElements(By.ClassName("hw_new")).Count > 0);
 
     Console.WriteLine($"{studentName} -> {checkedHomeworksCount + notCheckedHomeworksCount}");
-    
+
     statisticsList.Add(new StudentHomeworkStatistics
     {
-        StudentName = studentName, 
+        StudentName = studentName,
         CompletedHomeworksCount = checkedHomeworksCount + notCheckedHomeworksCount,
         TotalHomeworksCount = TOTAL_HOMEWORKS_COUNT
     });

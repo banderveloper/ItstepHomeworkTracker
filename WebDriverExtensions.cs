@@ -52,4 +52,17 @@ public static class WebDriverExtensions
             return false;
         }
     }
+
+    public static bool ElementVisible(this IWebDriver driver, By by)
+    {
+        try
+        {
+            var element = driver.FindElement(by);
+            return element.Displayed;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
 }
