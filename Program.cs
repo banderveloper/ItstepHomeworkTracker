@@ -1,7 +1,7 @@
 ﻿using ItstepHomeworkTracker;
+using ItstepHomeworkTracker.BySelectors;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
-using ItstepHomeworkTracker.BySelectors;
 
 const string LOGBOOK_LOGIN = "Kalnicki_Nikita";
 const string LOGBOOK_PASSWORD = "BpZ4bjS5871X";
@@ -33,10 +33,10 @@ driver.Url = "https://logbook.itstep.org/#/homeWork";
 
 driver.WaitElementDisappear(CommonBySelectors.BoxLoader);
 
-if (driver.ElementVisible(By.ClassName("hw-md__close")))
-    driver.FindElement(By.ClassName("hw-md__close")).Click();
+if (driver.ElementVisible(HomeworksBySelectors.NewHomeworksPopupCloseButton))
+    driver.FindElement(HomeworksBySelectors.NewHomeworksPopupCloseButton).Click();
 
-driver.FindElement(By.CssSelector("md-select[ng-model='filter.group']")).Click();
+driver.FindElement(HomeworksBySelectors.NewHomeworksPopupCloseButton).Click();
 
 var groupLink = driver.FindElement(By.XPath($"//md-option[text()='{GROUP_NAME}' and @ng-value='value.id_tgroups']"));
 var id = groupLink.GetAttribute("id");
@@ -47,16 +47,16 @@ driver.ExecuteScript($"document.getElementById('{id}').click()");
 
 Thread.Sleep(1000);
 
-IEnumerable<IWebElement> studentTrs = driver.FindElements(By.CssSelector("tr[ng-repeat='stud in stud_list']"));
+IEnumerable<IWebElement> studentTrs = driver.FindElements(HomeworksBySelectors.StudentHomeworksRow);
 Console.WriteLine(studentTrs.Count());
 
 var statisticsList = new List<StudentHomeworkStatistics>();
 
 foreach (var trElement in studentTrs)
 {
-    var studentName = trElement.FindElement(By.CssSelector("td[class='student-name'] p")).Text;
+    var studentName = trElement.FindElement(HomeworksBySelectors.StudentNameInHomeworksRow).Text;
 
-    var homeworkElements = trElement.FindElements(By.ClassName("hw_selects"));
+    var homeworkElements = trElement.FindElements(HomeworksBySelectors.HomeworkItemInHomeworksRow);
 
     int checkedHomeworksCount = homeworkElements.Count(element => element.FindElements(By.ClassName("hw_checked")).Count > 0);
     int notCheckedHomeworksCount = homeworkElements.Count(element => element.FindElements(By.ClassName("hw_new")).Count > 0);
@@ -73,7 +73,7 @@ foreach (var trElement in studentTrs)
 
 if (TOTAL_HOMEWORKS_COUNT > 7)
 {
-    driver.FindElement(By.CssSelector("button[ng-disabled='endPosition <= minDays']")).Click();
+    driver.FindElement(HomeworksBySelectors.HomeworksNextPageButton).Click();
     Thread.Sleep(100);
 }
 
