@@ -1,6 +1,7 @@
 ﻿using ItstepHomeworkTracker;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using ItstepHomeworkTracker.BySelectors;
 
 const string LOGBOOK_LOGIN = "Kalnicki_Nikita";
 const string LOGBOOK_PASSWORD = "BpZ4bjS5871X";
@@ -11,26 +12,26 @@ var driver = new ChromeDriver();
 
 driver.Url = "https://logbook.itstep.org/login/index#/";
 
-driver.WaitAndFindElement(By.Id("login"));
+driver.WaitAndFindElement(AuthorizationBySelectors.LoginInput);
 
-var loginInput = driver.FindElement(By.Id("login"));
-var passwordInput = driver.FindElement(By.Id("password"));
+var loginInput = driver.FindElement(AuthorizationBySelectors.LoginInput);
+var passwordInput = driver.FindElement(AuthorizationBySelectors.PasswordInput);
 
-var submitButton = driver.FindElement(By.ClassName("btn-login"));
+var submitButton = driver.FindElement(AuthorizationBySelectors.SubmitButton);
 
 loginInput.SendKeys(LOGBOOK_LOGIN);
 passwordInput.SendKeys(LOGBOOK_PASSWORD);
 
 submitButton.Click();
 
-driver.WaitAndFindElement(By.ClassName("open-menu-block"));
+driver.WaitAndFindElement(CommonBySelectors.LeftMenu);
 Console.WriteLine("Found menu block, start waiting for disappearing loader");
-driver.WaitElementDisappear(By.ClassName("loader"));
+driver.WaitElementDisappear(CommonBySelectors.BoxLoader);
 Console.WriteLine("Loader disappeared");
 
 driver.Url = "https://logbook.itstep.org/#/homeWork";
 
-driver.WaitElementDisappear(By.ClassName("loader"));
+driver.WaitElementDisappear(CommonBySelectors.BoxLoader);
 
 if (driver.ElementVisible(By.ClassName("hw-md__close")))
     driver.FindElement(By.ClassName("hw-md__close")).Click();
