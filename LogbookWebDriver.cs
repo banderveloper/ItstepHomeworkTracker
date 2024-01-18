@@ -172,7 +172,7 @@ public class LogbookWebDriver
     {
         string templateCode = string.Empty;
 
-        using (var reader = new StreamReader("template.html"))
+        using (var reader = new StreamReader("./template/template.html"))
         {
             templateCode = reader.ReadToEnd();
         }
@@ -182,7 +182,7 @@ public class LogbookWebDriver
         templateCode = templateCode.Replace("%%%requiredCompletePercent%%%", RequiredHomeworksPercent.ToString());
         templateCode = templateCode.Replace("%%%groupName%%%", TargetGroupName);
 
-        using (var writer = new StreamWriter(TargetGroupName + ".html"))
+        using (var writer = new StreamWriter("./results/" + TargetGroupName + ".html"))
         {
             writer.Write(templateCode);
         }
