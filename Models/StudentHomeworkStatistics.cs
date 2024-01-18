@@ -15,9 +15,4 @@ public class StudentHomeworkStatistics
         StudentName = studentName;
         HomeworksCompleting = new List<bool>();
     }
-
-    public override string ToString()
-    {
-        return $"{StudentName} / {HomeworksCompleting.Count(hw => hw)}";
-    }
 }

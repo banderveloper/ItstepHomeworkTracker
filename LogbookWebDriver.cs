@@ -71,7 +71,7 @@ public class LogbookWebDriver
         // iterate over each page and collect data about completed homeworks
         for (var currentPage = 1; currentPage <= totalPagesCount; currentPage++)
         {
-            Console.WriteLine($"==== PAGE {currentPage} ====");
+            Console.WriteLine($"Checking page {currentPage}");
             // get all student's homework rows
             var studentsHomeworksRows = _driver.FindElements(HomeworksBySelectors.StudentHomeworksRow);
 
@@ -97,6 +97,8 @@ public class LogbookWebDriver
                 if (currentPage == totalPagesCount && totalPagesCount > 1)
                 {
                     int leftHomeworksCount = _totalHomeworksCount % homeworksPerPage;
+                    if (leftHomeworksCount == 0) leftHomeworksCount = homeworksPerPage;
+                    
                     homeworksItems = homeworksItems.Take(leftHomeworksCount);
                 }
 
@@ -109,10 +111,11 @@ public class LogbookWebDriver
                 studentIndex++;
             }
 
-            GoNextHomeworksPage();
+            if(currentPage < totalPagesCount) GoNextHomeworksPage();
         }
 
         RenderHTMLStatistics(completedHomeworksList);
+        Console.WriteLine("Done!");
     }
 
     private void Authorize()
@@ -182,8 +185,9 @@ public class LogbookWebDriver
         templateCode = templateCode.Replace("%%%array_data%%%", JsonSerializer.Serialize(statisticsList));
         templateCode = templateCode.Replace("%%%total_homeworks_count%%%", _totalHomeworksCount.ToString());
         templateCode = templateCode.Replace("%%%requiredCompletePercent%%%", "80");
+        templateCode = templateCode.Replace("%%%groupName%%%", _targetGroupName);
 
-        using (var writer = new StreamWriter("statistics.html"))
+        using (var writer = new StreamWriter(_targetGroupName+".html"))
         {
             writer.Write(templateCode);
         }
