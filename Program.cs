@@ -9,5 +9,5 @@ var logbook = new LogbookWebDriver(LOGBOOK_LOGIN, LOGBOOK_PASSWORD, GROUP_NAME, 
 
 logbook.Start();
 
-Console.ReadLine();
+// Console.ReadLine();
 

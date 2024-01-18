@@ -1,11 +1,18 @@
-﻿namespace ItstepHomeworkTracker;
+﻿using CsvHelper.Configuration.Attributes;
+
+namespace ItstepHomeworkTracker;
 
 public class StudentHomeworkStatistics
 {
+    [Name("Прізвище")]
     public string StudentName { get; set; }
+    
+    [Name("Сдано ДЗ")]
     public int CompletedHomeworksCount { get; set; }
+    
+    [Name("Усього ДЗ")]
     public int TotalHomeworksCount { get; set; }
-
-    public double CompletedHomeworksPercent => CompletedHomeworksCount * 100 / (double)TotalHomeworksCount;
-    public override string ToString() => $"{StudentName} | {CompletedHomeworksCount}/{TotalHomeworksCount} ({CompletedHomeworksPercent:0.##})";
+    
+    [Name("% сданих ДЗ")]
+    public int CompletedHomeworksPercent => CompletedHomeworksCount * 100 / TotalHomeworksCount;
 }

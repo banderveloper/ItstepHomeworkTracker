@@ -1,4 +1,8 @@
-﻿using ItstepHomeworkTracker.BySelectors;
+﻿using System.Globalization;
+using System.Text;
+using CsvHelper;
+using CsvHelper.Configuration;
+using ItstepHomeworkTracker.BySelectors;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 
@@ -65,6 +69,7 @@ public class LogbookWebDriver
         else
             totalPagesCount = (int)Math.Ceiling((double)_totalHomeworksCount / homeworksPerPage);
         
+        // iterate over each page and collect data about completed homeworks
         for (var currentPage = 1; currentPage <= totalPagesCount; currentPage++)
         {
             Console.WriteLine($"==== PAGE {currentPage} ====");
@@ -105,6 +110,8 @@ public class LogbookWebDriver
 
             Console.WriteLine();
         }
+        
+        WriteDataToCsv(completedHomeworksDictionary);
     }
 
     private void Authorize()
@@ -160,5 +167,33 @@ public class LogbookWebDriver
     private void GoNextHomeworksPage()
     {
         _driver.FindElement(HomeworksBySelectors.HomeworksNextPageButton).Click();
+    }
+
+    private void WriteDataToCsv(Dictionary<string, int> completedHomeworksDictionary)
+    {
+        var statisticsList = new List<StudentHomeworkStatistics>();
+
+        foreach (var pair in completedHomeworksDictionary)
+        {
+            var listItem = new StudentHomeworkStatistics
+            {
+                StudentName = pair.Key,
+                CompletedHomeworksCount = pair.Value,
+                TotalHomeworksCount = _totalHomeworksCount
+            };
+            statisticsList.Add(listItem);
+        }
+
+        var csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture)
+        {
+            Delimiter = ";",
+            HasHeaderRecord = true,
+            Encoding = Encoding.UTF8
+        };
+
+        using var streamWriter = new StreamWriter("homeworks.csv");
+        using var csvWriter = new CsvWriter(streamWriter, csvConfiguration);
+        
+        csvWriter.WriteRecords(statisticsList);
     }
 }
