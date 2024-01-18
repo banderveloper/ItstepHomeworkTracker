@@ -1,5 +1,6 @@
 ﻿using ItstepHomeworkTracker;
 
+
 const string LOGBOOK_LOGIN = "Kalnicki_Nikita";
 const string LOGBOOK_PASSWORD = "BpZ4bjS5871X";
 const string GROUP_NAME = "Н4311";
