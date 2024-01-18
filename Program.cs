@@ -2,7 +2,7 @@
 
 const string logbookLogin = "Kalnicki_Nikita";
 const string logbookPassword = "BpZ4bjS5871X";
-const string groupName = "ПВ212qweq";
+const string groupName = "ПВ212";
 const int totalHomeworksCount = 100;
 
 var logbook = new LogbookWebDriver
@@ -17,6 +17,12 @@ var logbook = new LogbookWebDriver
 logbook.OnLogMessageSent += (sender, e) =>
 {
     Console.WriteLine(e.LastLogMessage);
+};
+logbook.OnErrorMessageSent += (sender, e) =>
+{
+    Console.ForegroundColor = ConsoleColor.Red;
+    Console.WriteLine(e.LastLogMessage);
+    Console.ResetColor();
 };
 logbook.OnFinished += (sender, e) =>
 {
