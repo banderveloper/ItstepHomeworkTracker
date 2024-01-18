@@ -2,7 +2,7 @@
 
 namespace ItstepHomeworkTracker.Models;
 
-public class StudentHomeworkStatistics
+internal class StudentHomeworkStatistics
 {
     [JsonPropertyName("name")]
     public string StudentName { get; set; }

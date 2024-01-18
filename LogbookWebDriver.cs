@@ -9,18 +9,13 @@ namespace ItstepHomeworkTracker;
 
 public class LogbookWebDriver
 {
-    private readonly IWebDriver _driver;
+    private readonly IWebDriver _driver = new ChromeDriver();
 
-    private readonly string _accountUsername;
-    private readonly string _accountPassword;
-
-    private readonly string _targetGroupName;
-    private readonly int _totalHomeworksCount;
-
-    public LogbookWebDriver(string accountUsername, string accountPassword, string targetGroupName,
-        int totalHomeworksCount) =>
-        (_accountUsername, _accountPassword, _targetGroupName, _totalHomeworksCount, _driver) =
-        (accountUsername, accountPassword, targetGroupName, totalHomeworksCount, new ChromeDriver());
+    public string AccountUsername { get; init; }
+    public string AccountPassword { get; init; }
+    public string TargetGroupName { get; init; }
+    public int TotalHomeworksCount { get; init; }
+    public int RequiredHomeworksPercent { get; init; }
 
     public void Start()
     {
@@ -46,10 +41,9 @@ public class LogbookWebDriver
         _driver.FindElement(HomeworksBySelectors.GroupsListDropdownMenu).Click();
 
         // find and click needed group in dropdown menu
-        var groupLink = _driver.FindElement(HomeworksBySelectors.GetGroupLinkDropdownElement(_targetGroupName));
+        var groupLink = _driver.FindElement(HomeworksBySelectors.GetGroupLinkDropdownElement(TargetGroupName));
         var linkElementId = groupLink.GetAttribute("id");
         (_driver as ChromeDriver)!.ExecuteScript($"document.getElementById('{linkElementId}').click()");
-
 
         // sleep 1s
         Thread.Sleep(1000);
@@ -63,11 +57,11 @@ public class LogbookWebDriver
         var homeworksPerPage = GetHomeworksCountInPage();
         var totalPagesCount = 0;
 
-        if (homeworksPerPage == _totalHomeworksCount)
+        if (homeworksPerPage == TotalHomeworksCount)
             totalPagesCount = 1;
         else
-            totalPagesCount = (int)Math.Ceiling((double)_totalHomeworksCount / homeworksPerPage);
-        
+            totalPagesCount = (int)Math.Ceiling((double)TotalHomeworksCount / homeworksPerPage);
+
         // iterate over each page and collect data about completed homeworks
         for (var currentPage = 1; currentPage <= totalPagesCount; currentPage++)
         {
@@ -76,7 +70,7 @@ public class LogbookWebDriver
             var studentsHomeworksRows = _driver.FindElements(HomeworksBySelectors.StudentHomeworksRow);
 
             int studentIndex = 0;
-            
+
             // iterate student's rows
             foreach (var studentHomeworksRow in studentsHomeworksRows)
             {
@@ -96,22 +90,23 @@ public class LogbookWebDriver
                 // if last page - dont take all homeworks, only needed
                 if (currentPage == totalPagesCount && totalPagesCount > 1)
                 {
-                    int leftHomeworksCount = _totalHomeworksCount % homeworksPerPage;
+                    int leftHomeworksCount = TotalHomeworksCount % homeworksPerPage;
                     if (leftHomeworksCount == 0) leftHomeworksCount = homeworksPerPage;
-                    
+
                     homeworksItems = homeworksItems.Take(leftHomeworksCount);
                 }
 
                 foreach (var homeworkItem in homeworksItems)
                 {
-                    completedHomeworksList[studentIndex].HomeworksCompleting.Add(HomeworkItemNewOrCompleted(homeworkItem));
+                    completedHomeworksList[studentIndex].HomeworksCompleting
+                        .Add(HomeworkItemNewOrCompleted(homeworkItem));
                 }
-                
+
                 // show
                 studentIndex++;
             }
 
-            if(currentPage < totalPagesCount) GoNextHomeworksPage();
+            if (currentPage < totalPagesCount) GoNextHomeworksPage();
         }
 
         RenderHTMLStatistics(completedHomeworksList);
@@ -126,8 +121,8 @@ public class LogbookWebDriver
         var passwordInput = _driver.FindElement(AuthorizationBySelectors.PasswordInput);
         var submitButton = _driver.FindElement(AuthorizationBySelectors.SubmitButton);
 
-        loginInput.SendKeys(_accountUsername);
-        passwordInput.SendKeys(_accountPassword);
+        loginInput.SendKeys(AccountUsername);
+        passwordInput.SendKeys(AccountPassword);
 
         submitButton.Click();
     }
@@ -183,11 +178,11 @@ public class LogbookWebDriver
         }
 
         templateCode = templateCode.Replace("%%%array_data%%%", JsonSerializer.Serialize(statisticsList));
-        templateCode = templateCode.Replace("%%%total_homeworks_count%%%", _totalHomeworksCount.ToString());
-        templateCode = templateCode.Replace("%%%requiredCompletePercent%%%", "80");
-        templateCode = templateCode.Replace("%%%groupName%%%", _targetGroupName);
+        templateCode = templateCode.Replace("%%%total_homeworks_count%%%", TotalHomeworksCount.ToString());
+        templateCode = templateCode.Replace("%%%requiredCompletePercent%%%", RequiredHomeworksPercent.ToString());
+        templateCode = templateCode.Replace("%%%groupName%%%", TargetGroupName);
 
-        using (var writer = new StreamWriter(_targetGroupName+".html"))
+        using (var writer = new StreamWriter(TargetGroupName + ".html"))
         {
             writer.Write(templateCode);
         }

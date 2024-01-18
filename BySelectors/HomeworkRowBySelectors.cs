@@ -2,7 +2,7 @@
 
 namespace ItstepHomeworkTracker.BySelectors;
 
-public static class HomeworkRowBySelectors
+internal static class HomeworkRowBySelectors
 {
     public static By StudentNameElement = By.CssSelector("td[class='student-name'] p");
     public static By HomeworkItem = By.ClassName("hw_selects");

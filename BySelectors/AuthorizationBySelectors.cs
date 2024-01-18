@@ -2,7 +2,7 @@ using OpenQA.Selenium;
 
 namespace ItstepHomeworkTracker.BySelectors;
 
-public static class AuthorizationBySelectors
+internal static class AuthorizationBySelectors
 {
     public static readonly By LoginInput = By.Id("login");
     public static readonly By PasswordInput = By.Id("password");

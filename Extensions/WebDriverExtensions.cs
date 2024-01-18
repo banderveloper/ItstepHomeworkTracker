@@ -2,7 +2,7 @@
 
 namespace ItstepHomeworkTracker.Extensions;
 
-public static class WebDriverExtensions
+internal static class WebDriverExtensions
 {
     private const int RepeatTimeout = 50;
 
