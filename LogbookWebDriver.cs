@@ -39,31 +39,31 @@ public class LogbookWebDriver
         if (_driver.ElementVisible(closeButtonSelector))
             _driver.FindElement(closeButtonSelector).Click();
         
-        Thread.Sleep(100);
-
+        // click groups dropdown menu
         _driver.FindElement(HomeworksBySelectors.GroupsListDropdownMenu).Click();
         
-        Thread.Sleep(100);
-        
         // find and click needed group in dropdown menu
-        var groupLink =
-            _driver.FindElement(By.XPath($"//md-option[text()='{_targetGroupName}' and @ng-value='value.id_tgroups']"));
+        var groupLink = _driver.FindElement(HomeworksBySelectors.GetGroupLinkDropdownElement(_targetGroupName));
         var linkElementId = groupLink.GetAttribute("id");
         (_driver as ChromeDriver)!.ExecuteScript($"document.getElementById('{linkElementId}').click()");
 
+        // sleep 1s
         Thread.Sleep(1000);
         
-        // 
-        IEnumerable<IWebElement> studentTrs = _driver.FindElements(HomeworksBySelectors.StudentHomeworksRow);
-        Console.WriteLine(studentTrs.Count());
-
         var statisticsList = new List<StudentHomeworkStatistics>();
+        
+        // get all student's homework rows
+        var studentsHomeworkRows = _driver.FindElements(HomeworksBySelectors.StudentHomeworksRow);
 
-        foreach (var trElement in studentTrs)
+        var currentPage = 0;
+        var homeworksPerPage = GetHomeworksCountInPage();
+        var totalPagesCount = (int)Math.Ceiling((double)_totalHomeworksCount / homeworksPerPage);
+
+        foreach (var trElement in studentsHomeworkRows)
         {
-            var studentName = trElement.FindElement(HomeworksBySelectors.StudentNameInHomeworksRow).Text;
+            var studentName = trElement.FindElement(HomeworkRowBySelectors.StudentNameElement).Text;
 
-            var homeworkElements = trElement.FindElements(HomeworksBySelectors.HomeworkItemInHomeworksRow);
+            var homeworkElements = trElement.FindElements(HomeworkRowBySelectors.HomeworkItem);
 
             int checkedHomeworksCount =
                 homeworkElements.Count(element => element.FindElements(By.ClassName("hw_checked")).Count > 0);
@@ -86,7 +86,7 @@ public class LogbookWebDriver
             Thread.Sleep(100);
         }
 
-        studentTrs = _driver.FindElements(By.CssSelector("tr[ng-repeat='stud in stud_list']"));
+        var studentTrs = _driver.FindElements(By.CssSelector("tr[ng-repeat='stud in stud_list']"));
 
         foreach (var trElement in studentTrs)
         {
@@ -131,5 +131,12 @@ public class LogbookWebDriver
     private void WaitBoxLoading()
     {
         _driver.WaitElementDisappear(CommonBySelectors.BoxLoader);
+    }
+
+    private int GetHomeworksCountInPage()
+    {
+        var firstRow = _driver.FindElement(HomeworksBySelectors.StudentHomeworksRow);
+
+        return firstRow.FindElements(HomeworkRowBySelectors.HomeworkItem).Count;
     }
 }
