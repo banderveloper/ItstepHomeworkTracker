@@ -38,80 +38,73 @@ public class LogbookWebDriver
         var closeButtonSelector = HomeworksBySelectors.NewHomeworksPopupCloseButton;
         if (_driver.ElementVisible(closeButtonSelector))
             _driver.FindElement(closeButtonSelector).Click();
-        
+
         // click groups dropdown menu
         _driver.FindElement(HomeworksBySelectors.GroupsListDropdownMenu).Click();
-        
+
         // find and click needed group in dropdown menu
         var groupLink = _driver.FindElement(HomeworksBySelectors.GetGroupLinkDropdownElement(_targetGroupName));
         var linkElementId = groupLink.GetAttribute("id");
         (_driver as ChromeDriver)!.ExecuteScript($"document.getElementById('{linkElementId}').click()");
 
+
         // sleep 1s
         Thread.Sleep(1000);
-        
-        var statisticsList = new List<StudentHomeworkStatistics>();
-        
-        // get all student's homework rows
-        var studentsHomeworkRows = _driver.FindElements(HomeworksBySelectors.StudentHomeworksRow);
 
-        var currentPage = 0;
+        WaitBoxLoading();
+
+        // dictionary <student name, completed homeworks count>
+        var completedHomeworksDictionary = new Dictionary<string, int>();
+
+        // calculate pagination data
         var homeworksPerPage = GetHomeworksCountInPage();
-        var totalPagesCount = (int)Math.Ceiling((double)_totalHomeworksCount / homeworksPerPage);
+        var totalPagesCount = 0;
 
-        foreach (var trElement in studentsHomeworkRows)
+        if (homeworksPerPage == _totalHomeworksCount)
+            totalPagesCount = 1;
+        else
+            totalPagesCount = (int)Math.Ceiling((double)_totalHomeworksCount / homeworksPerPage);
+        
+        for (var currentPage = 1; currentPage <= totalPagesCount; currentPage++)
         {
-            var studentName = trElement.FindElement(HomeworkRowBySelectors.StudentNameElement).Text;
+            Console.WriteLine($"==== PAGE {currentPage} ====");
+            // get all student's homework rows
+            var studentsHomeworksRows = _driver.FindElements(HomeworksBySelectors.StudentHomeworksRow);
 
-            var homeworkElements = trElement.FindElements(HomeworkRowBySelectors.HomeworkItem);
-
-            int checkedHomeworksCount =
-                homeworkElements.Count(element => element.FindElements(By.ClassName("hw_checked")).Count > 0);
-            int notCheckedHomeworksCount =
-                homeworkElements.Count(element => element.FindElements(By.ClassName("hw_new")).Count > 0);
-
-            Console.WriteLine($"{studentName} -> {checkedHomeworksCount + notCheckedHomeworksCount}");
-
-            statisticsList.Add(new StudentHomeworkStatistics
+            // iterate student's rows
+            foreach (var studentHomeworksRow in studentsHomeworksRows)
             {
-                StudentName = studentName,
-                CompletedHomeworksCount = checkedHomeworksCount + notCheckedHomeworksCount,
-                TotalHomeworksCount = _totalHomeworksCount
-            });
+                // get student name
+                var studentName = studentHomeworksRow.FindElement(HomeworkRowBySelectors.StudentNameElement).Text;
+
+                // try initialize student in dictionary with 0 hws
+                completedHomeworksDictionary.TryAdd(studentName, 0);
+
+                // get all homeworks
+                IEnumerable<IWebElement> homeworksItems =
+                    studentHomeworksRow.FindElements(HomeworkRowBySelectors.HomeworkItem);
+
+                // if last page - dont take all homeworks, only needed
+                if (currentPage == totalPagesCount && totalPagesCount > 1)
+                {
+                    int leftHomeworksCount = _totalHomeworksCount % homeworksPerPage;
+                    homeworksItems = homeworksItems.Take(leftHomeworksCount);
+                }
+
+                // get only completed/new homeworks count
+                var completedHomeworksCount = homeworksItems.Count(HomeworkItemNewOrCompleted);
+
+                // add new/completed homeworks count to student's statistics
+                completedHomeworksDictionary[studentName] += completedHomeworksCount;
+
+                // show
+                Console.WriteLine($"{studentName} +{completedHomeworksCount}");
+            }
+
+            GoNextHomeworksPage();
+
+            Console.WriteLine();
         }
-
-        if (_totalHomeworksCount > 7)
-        {
-            _driver.FindElement(HomeworksBySelectors.HomeworksNextPageButton).Click();
-            Thread.Sleep(100);
-        }
-
-        var studentTrs = _driver.FindElements(By.CssSelector("tr[ng-repeat='stud in stud_list']"));
-
-        foreach (var trElement in studentTrs)
-        {
-            var studentName = trElement.FindElement(By.CssSelector("td[class='student-name'] p")).Text;
-
-            var homeworkElements = trElement.FindElements(By.ClassName("hw_selects"));
-
-            var checkedHomeworksCount =
-                homeworkElements.Count(element => element.FindElements(By.ClassName("hw_checked")).Count > 0);
-            var notCheckedHomeworksCount =
-                homeworkElements.Count(element => element.FindElements(By.ClassName("hw_new")).Count > 0);
-            var totalCompletedHomeworks = checkedHomeworksCount + notCheckedHomeworksCount;
-
-            Console.WriteLine($"{studentName} -> {checkedHomeworksCount + notCheckedHomeworksCount}");
-
-            statisticsList.FirstOrDefault(i => i.StudentName.Equals(studentName)).CompletedHomeworksCount +=
-                totalCompletedHomeworks;
-        }
-
-        foreach (var studentInfo in statisticsList)
-        {
-            Console.WriteLine(studentInfo);
-        }
-
-        Console.ReadLine();
     }
 
     private void Authorize()
@@ -136,7 +129,36 @@ public class LogbookWebDriver
     private int GetHomeworksCountInPage()
     {
         var firstRow = _driver.FindElement(HomeworksBySelectors.StudentHomeworksRow);
-
         return firstRow.FindElements(HomeworkRowBySelectors.HomeworkItem).Count;
+    }
+
+    private bool HomeworkItemNewOrCompleted(IWebElement homeworkItem)
+    {
+        // try identify homework as new
+        try
+        {
+            homeworkItem.FindElement(HomeworkRowBySelectors.NewHomeworkItem);
+            return true;
+        }
+        catch (Exception)
+        {
+            // ignored
+        }
+
+        // try identify homework as completed
+        try
+        {
+            homeworkItem.FindElement(HomeworkRowBySelectors.CompletedHomeworkItem);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            return false;
+        }
+    }
+
+    private void GoNextHomeworksPage()
+    {
+        _driver.FindElement(HomeworksBySelectors.HomeworksNextPageButton).Click();
     }
 }
