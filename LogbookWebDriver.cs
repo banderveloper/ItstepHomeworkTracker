@@ -16,9 +16,15 @@ public class LogbookWebDriver
     public string TargetGroupName { get; init; }
     public int TotalHomeworksCount { get; init; }
     public int RequiredHomeworksPercent { get; init; }
+    public event LogbookWebDriverDelegate? OnLogMessageSent;
+    public event LogbookWebDriverDelegate? OnFinished;
+    public event LogbookWebDriverDelegate? OnErrorMessageSent;
+
 
     public void Start()
     {
+        OnLogMessageSent?.Invoke(this, new LogbookEventArgs("Start!"));
+
         // go to auth page
         _driver.Url = "https://logbook.itstep.org/login/index#/";
 
@@ -28,6 +34,8 @@ public class LogbookWebDriver
         _driver.WaitAndFindElement(CommonBySelectors.LeftMenu);
         WaitBoxLoading();
 
+        OnLogMessageSent?.Invoke(this, new LogbookEventArgs("Navigating to homeworks page..."));  
+        
         // go to homeworks page and wait for loading
         _driver.Url = "https://logbook.itstep.org/#/homeWork";
         WaitBoxLoading();
@@ -35,37 +43,57 @@ public class LogbookWebDriver
         // close homeworks popup window if its displayed
         var closeButtonSelector = HomeworksBySelectors.NewHomeworksPopupCloseButton;
         if (_driver.ElementVisible(closeButtonSelector))
+        {
             _driver.FindElement(closeButtonSelector).Click();
-
+            OnLogMessageSent?.Invoke(this, new LogbookEventArgs("Closed new homeworks popup window."));   
+        }
+        
         // click groups dropdown menu
         _driver.FindElement(HomeworksBySelectors.GroupsListDropdownMenu).Click();
 
         // find and click needed group in dropdown menu
-        var groupLink = _driver.FindElement(HomeworksBySelectors.GetGroupLinkDropdownElement(TargetGroupName));
-        var linkElementId = groupLink.GetAttribute("id");
-        (_driver as ChromeDriver)!.ExecuteScript($"document.getElementById('{linkElementId}').click()");
+        try
+        {
+            var groupLink = _driver.FindElement(HomeworksBySelectors.GetGroupLinkDropdownElement(TargetGroupName));
+            var linkElementId = groupLink.GetAttribute("id");
+            (_driver as ChromeDriver)!.ExecuteScript($"document.getElementById('{linkElementId}').click()");
+        }
+        catch (Exception ex)
+        {
+            OnErrorMessageSent?.Invoke(this, new LogbookEventArgs($"Group with name '{TargetGroupName}' not found."));
+            return;
+        }
 
+        OnLogMessageSent?.Invoke(this, new LogbookEventArgs($"Chose group {TargetGroupName} in dropdown menu")); 
+        
         // sleep 1s
         Thread.Sleep(1000);
 
+        OnLogMessageSent?.Invoke(this, new LogbookEventArgs("Waiting for homeworks loading..."));   
+        
         WaitBoxLoading();
 
         // dictionary <student name, completed homeworks count>
         var completedHomeworksList = new List<StudentHomeworkStatistics>();
 
+        
         // calculate pagination data
         var homeworksPerPage = GetHomeworksCountInPage();
         var totalPagesCount = 0;
+        
+        OnLogMessageSent?.Invoke(this, new LogbookEventArgs($"One page has {homeworksPerPage} homeworks"));   
 
         if (homeworksPerPage == TotalHomeworksCount)
             totalPagesCount = 1;
         else
             totalPagesCount = (int)Math.Ceiling((double)TotalHomeworksCount / homeworksPerPage);
+        
+        OnLogMessageSent?.Invoke(this, new LogbookEventArgs($"I will check {totalPagesCount} page(s)"));    
 
         // iterate over each page and collect data about completed homeworks
         for (var currentPage = 1; currentPage <= totalPagesCount; currentPage++)
         {
-            Console.WriteLine($"Checking page {currentPage}");
+            OnLogMessageSent?.Invoke(this, new LogbookEventArgs($"Collecting data from page {currentPage}/{totalPagesCount}")); 
             // get all student's homework rows
             var studentsHomeworksRows = _driver.FindElements(HomeworksBySelectors.StudentHomeworksRow);
 
@@ -109,12 +137,17 @@ public class LogbookWebDriver
             if (currentPage < totalPagesCount) GoNextHomeworksPage();
         }
 
+        OnLogMessageSent?.Invoke(this, new LogbookEventArgs($"Data collected, started export to {TargetGroupName}.html")); 
+        
         RenderHTMLStatistics(completedHomeworksList);
-        Console.WriteLine("Done!");
+        
+        OnFinished?.Invoke(this, new LogbookEventArgs("Done!", true));
     }
 
     private void Authorize()
     {
+        OnLogMessageSent?.Invoke(this, new LogbookEventArgs("Authorizing...")); 
+        
         _driver.WaitAndFindElement(AuthorizationBySelectors.LoginInput);
 
         var loginInput = _driver.FindElement(AuthorizationBySelectors.LoginInput);
@@ -125,6 +158,8 @@ public class LogbookWebDriver
         passwordInput.SendKeys(AccountPassword);
 
         submitButton.Click();
+        
+        OnLogMessageSent?.Invoke(this, new LogbookEventArgs("Submitted authorization, waiting for home page loading...")); 
     }
 
     private void WaitBoxLoading()
@@ -187,4 +222,6 @@ public class LogbookWebDriver
             writer.Write(templateCode);
         }
     }
+
+    public delegate void LogbookWebDriverDelegate(object sender, LogbookEventArgs e);
 }
