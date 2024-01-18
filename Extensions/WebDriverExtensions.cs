@@ -1,6 +1,6 @@
 ﻿using OpenQA.Selenium;
 
-namespace ItstepHomeworkTracker;
+namespace ItstepHomeworkTracker.Extensions;
 
 public static class WebDriverExtensions
 {

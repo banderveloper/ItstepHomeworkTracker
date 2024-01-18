@@ -3,6 +3,8 @@ using System.Text;
 using CsvHelper;
 using CsvHelper.Configuration;
 using ItstepHomeworkTracker.BySelectors;
+using ItstepHomeworkTracker.Extensions;
+using ItstepHomeworkTracker.Models;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 
@@ -158,7 +160,7 @@ public class LogbookWebDriver
             homeworkItem.FindElement(HomeworkRowBySelectors.CompletedHomeworkItem);
             return true;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return false;
         }
@@ -171,18 +173,12 @@ public class LogbookWebDriver
 
     private void WriteDataToCsv(Dictionary<string, int> completedHomeworksDictionary)
     {
-        var statisticsList = new List<StudentHomeworkStatistics>();
-
-        foreach (var pair in completedHomeworksDictionary)
+        var statisticsList = completedHomeworksDictionary.Select(pair => new StudentHomeworkStatistics
         {
-            var listItem = new StudentHomeworkStatistics
-            {
-                StudentName = pair.Key,
-                CompletedHomeworksCount = pair.Value,
-                TotalHomeworksCount = _totalHomeworksCount
-            };
-            statisticsList.Add(listItem);
-        }
+            StudentName = pair.Key, 
+            CompletedHomeworksCount = pair.Value, 
+            TotalHomeworksCount = _totalHomeworksCount
+        }).ToList();
 
         var csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture)
         {

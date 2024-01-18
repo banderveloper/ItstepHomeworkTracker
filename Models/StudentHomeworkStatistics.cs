@@ -1,6 +1,6 @@
 ﻿using CsvHelper.Configuration.Attributes;
 
-namespace ItstepHomeworkTracker;
+namespace ItstepHomeworkTracker.Models;
 
 public class StudentHomeworkStatistics
 {
