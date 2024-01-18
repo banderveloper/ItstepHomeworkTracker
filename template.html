@@ -30,6 +30,7 @@
             border-radius: 5px 5px 0 0;
             overflow: hidden;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+            width: 90%;
         }
 
         .content-table thead tr {
@@ -45,7 +46,7 @@
         }
 
         .content-table td {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 400;
         }
 
@@ -81,14 +82,21 @@
 
         .red-row {
             background-color: rgba(255, 0, 0, 0.298);
+            color: rgb(160, 0, 0);
         }
 
         .orange-row {
             background-color: rgba(251, 255, 0, 0.299);
+            color: rgb(147, 96, 0);
         }
 
         .green-row {
-            background-color: rgba(0, 128, 0, 0.302);
+            background-color: rgba(0, 164, 0, 0.302);
+            color: rgb(0, 108, 0);
+        }
+        
+        .nowrap {
+            white-space: nowrap;
         }
     </style>
 </head>
@@ -123,27 +131,29 @@
 
         const visualTh = document.querySelector('.visual-th');
         const tBody = document.querySelector('tbody');
+        const totalHwCountElement = document.querySelector('.total-hw-count > span');
 
-        // const data = JSON.parse('%%%array_data%%%');
-        // const totalHomeworksCount = %%%total_homeworks_count%%%;
-        // const requitedCompletePercent = %%%requiredCompletePercent%%%;
+        const data = JSON.parse('%%%array_data%%%');
+        const totalHomeworksCount = %%%total_homeworks_count%%%;
+        const requiredCompletePercent = %%%requiredCompletePercent%%%;
 
-        const totalHomeworksCount = 11;
-        const requiredCompletePercent = 80;
-
-        const data = [
-            {
-                name: "Кальницький Микита Андрійович",
-                homeworks: [true, true, true, true, true,true, false, true, true, false, false]
-            },
-            {
-                name: "Попов Попа попа",
-                homeworks: [true, false, true, true, false,true, false, true, true, false, false]
-            }
-        ];
+        //  const totalHomeworksCount = 11;
+        //  const requiredCompletePercent = 80;
+        //
+        //  const data = [
+        //      {
+        //          name: "Кальницький Микита Андрійович",
+        //          homeworks: [true, true, true, true, true,true, true, true, true, true, false]
+        //      },
+        //      {
+        //          name: "Попов Попа попа",
+        //          homeworks: [true, false, true, true, false,true, false, true, true, false, false]
+        //      }
+        // ];
 
         window.addEventListener('load', event => {
 
+            totalHwCountElement.innerHTML = String(totalHomeworksCount);
             visualTh.setAttribute('colspan', String(totalHomeworksCount));
 
             data.forEach((item, index) => {
@@ -172,12 +182,12 @@
 
             tableRow.innerHTML += `<td>${index + 1}</td>`;
             tableRow.innerHTML += `<td>${data.name}</td>`;
-            tableRow.innerHTML += `<td>${completedHomeworksCount} / ${totalHomeworksCount}</td>`;
-            tableRow.innerHTML += `<td>${parseInt(completedHomeworksPercent)} / ${requiredCompletePercent}</td>`;
+            tableRow.innerHTML += `<td class="nowrap">${completedHomeworksCount} / ${totalHomeworksCount}</td>`;
+            tableRow.innerHTML += `<td class="nowrap">${parseInt(completedHomeworksPercent)} / ${requiredCompletePercent}</td>`;
 
             data.homeworks.forEach((homeworkCompleted, index) => {
             
-                tableRow.innerHTML += `<td><div class="hw-item ${homeworkCompleted ? "hw-completed" : "hw-uncompleted"}">${index+1}</td>`;
+                tableRow.innerHTML += `<td><div class="hw-item ${homeworkCompleted ? "hw-completed" : "hw-uncompleted"}">${totalHomeworksCount-index}</td>`;
             });
 
             return tableRow;

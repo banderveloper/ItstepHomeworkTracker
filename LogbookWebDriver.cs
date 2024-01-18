@@ -1,7 +1,4 @@
-﻿using System.Globalization;
-using System.Text;
-using CsvHelper;
-using CsvHelper.Configuration;
+﻿using System.Text.Json;
 using ItstepHomeworkTracker.BySelectors;
 using ItstepHomeworkTracker.Extensions;
 using ItstepHomeworkTracker.Models;
@@ -60,7 +57,7 @@ public class LogbookWebDriver
         WaitBoxLoading();
 
         // dictionary <student name, completed homeworks count>
-        var completedHomeworksDictionary = new Dictionary<string, int>();
+        var completedHomeworksList = new List<StudentHomeworkStatistics>();
 
         // calculate pagination data
         var homeworksPerPage = GetHomeworksCountInPage();
@@ -78,6 +75,8 @@ public class LogbookWebDriver
             // get all student's homework rows
             var studentsHomeworksRows = _driver.FindElements(HomeworksBySelectors.StudentHomeworksRow);
 
+            int studentIndex = 0;
+            
             // iterate student's rows
             foreach (var studentHomeworksRow in studentsHomeworksRows)
             {
@@ -85,7 +84,10 @@ public class LogbookWebDriver
                 var studentName = studentHomeworksRow.FindElement(HomeworkRowBySelectors.StudentNameElement).Text;
 
                 // try initialize student in dictionary with 0 hws
-                completedHomeworksDictionary.TryAdd(studentName, 0);
+                if (currentPage == 1)
+                {
+                    completedHomeworksList.Add(new StudentHomeworkStatistics(studentName));
+                }
 
                 // get all homeworks
                 IEnumerable<IWebElement> homeworksItems =
@@ -98,22 +100,19 @@ public class LogbookWebDriver
                     homeworksItems = homeworksItems.Take(leftHomeworksCount);
                 }
 
-                // get only completed/new homeworks count
-                var completedHomeworksCount = homeworksItems.Count(HomeworkItemNewOrCompleted);
-
-                // add new/completed homeworks count to student's statistics
-                completedHomeworksDictionary[studentName] += completedHomeworksCount;
-
+                foreach (var homeworkItem in homeworksItems)
+                {
+                    completedHomeworksList[studentIndex].HomeworksCompleting.Add(HomeworkItemNewOrCompleted(homeworkItem));
+                }
+                
                 // show
-                Console.WriteLine($"{studentName} +{completedHomeworksCount}");
+                studentIndex++;
             }
 
             GoNextHomeworksPage();
-
-            Console.WriteLine();
         }
-        
-        WriteDataToCsv(completedHomeworksDictionary);
+
+        RenderHTMLStatistics(completedHomeworksList);
     }
 
     private void Authorize()
@@ -171,25 +170,22 @@ public class LogbookWebDriver
         _driver.FindElement(HomeworksBySelectors.HomeworksNextPageButton).Click();
     }
 
-    private void WriteDataToCsv(Dictionary<string, int> completedHomeworksDictionary)
+    private void RenderHTMLStatistics(List<StudentHomeworkStatistics> statisticsList)
     {
-        var statisticsList = completedHomeworksDictionary.Select(pair => new StudentHomeworkStatistics
-        {
-            StudentName = pair.Key, 
-            CompletedHomeworksCount = pair.Value, 
-            TotalHomeworksCount = _totalHomeworksCount
-        }).ToList();
+        string templateCode = string.Empty;
 
-        var csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture)
+        using (var reader = new StreamReader("template.html"))
         {
-            Delimiter = ";",
-            HasHeaderRecord = true,
-            Encoding = Encoding.UTF8
-        };
+            templateCode = reader.ReadToEnd();
+        }
 
-        using var streamWriter = new StreamWriter("homeworks.csv");
-        using var csvWriter = new CsvWriter(streamWriter, csvConfiguration);
-        
-        csvWriter.WriteRecords(statisticsList);
+        templateCode = templateCode.Replace("%%%array_data%%%", JsonSerializer.Serialize(statisticsList));
+        templateCode = templateCode.Replace("%%%total_homeworks_count%%%", _totalHomeworksCount.ToString());
+        templateCode = templateCode.Replace("%%%requiredCompletePercent%%%", "80");
+
+        using (var writer = new StreamWriter("statistics.html"))
+        {
+            writer.Write(templateCode);
+        }
     }
 }
