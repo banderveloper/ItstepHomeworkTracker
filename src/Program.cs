@@ -1,9 +1,15 @@
 ﻿using ItstepHomeworkTracker;
 
+if (args.Length < 2)
+{
+    Console.WriteLine("Launch error. Group name and total homeworks count must be given in args");
+    return;
+}
+
 const string logbookLogin = "Kalnicki_Nikita";
 const string logbookPassword = "BpZ4bjS5871X";
-const string groupName = "ПВ212";
-const int totalHomeworksCount = 100;
+var groupName = args[0];
+var totalHomeworksCount = int.Parse(args[1]);
 
 var logbook = new LogbookWebDriver
 {
@@ -31,6 +37,4 @@ logbook.OnFinished += (sender, e) =>
 };
 
 logbook.Start();
-
-Console.ReadLine();
 

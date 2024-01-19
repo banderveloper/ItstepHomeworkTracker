@@ -23,7 +23,7 @@ public class LogbookWebDriver
 
     public void Start()
     {
-        OnLogMessageSent?.Invoke(this, new LogbookEventArgs("Start!"));
+        OnLogMessageSent?.Invoke(this, new LogbookEventArgs("Start! Waiting for logbook loading..."));
 
         // go to auth page
         _driver.Url = "https://logbook.itstep.org/login/index#/";
