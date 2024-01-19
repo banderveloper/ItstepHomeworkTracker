@@ -1,15 +1,15 @@
 ﻿using ItstepHomeworkTracker;
 
-if (args.Length < 2)
+if (args.Length < 5)
 {
-    Console.WriteLine("Launch error. Group name and total homeworks count must be given in args");
-    return;
+    Console.WriteLine("Launch error! Needed 5 launch arguments - username, password, group name, total homeworks count, required percent");
+    Console.WriteLine("Press any key to continue...");
+    Console.ReadKey();
+    Environment.Exit(0);
 }
 
-const string logbookLogin = "Kalnicki_Nikita";
-const string logbookPassword = "BpZ4bjS5871X";
-var groupName = args[0];
-var totalHomeworksCount = int.Parse(args[1]);
+string logbookLogin = args[0], logbookPassword = args[1], groupName = args[2];
+int totalHomeworksCount = int.Parse(args[3]), requiredHomeworksPercent = int.Parse(args[4]);
 
 var logbook = new LogbookWebDriver
 {
@@ -17,7 +17,7 @@ var logbook = new LogbookWebDriver
     AccountPassword = logbookPassword,
     TotalHomeworksCount = totalHomeworksCount,
     TargetGroupName = groupName,
-    RequiredHomeworksPercent = 80
+    RequiredHomeworksPercent = requiredHomeworksPercent
 };
 
 logbook.OnLogMessageSent += (sender, e) =>
