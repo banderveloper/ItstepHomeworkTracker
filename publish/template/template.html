@@ -117,7 +117,7 @@
                     <th>Ім'я</th>
                     <th>Здано ДЗ</th>
                     <th>%</th>
-                    <th class="visual-th" colspan="200">Візуалізація</th>
+                    <th class="visual-th" colspan="200">ДЗ та їх номер</th>
                 </tr>
             </thead>
             <tbody>
@@ -190,7 +190,7 @@
 
             data.homeworks.forEach((homeworkCompleted, index) => {
             
-                tableRow.innerHTML += `<td><div class="hw-item ${homeworkCompleted ? "hw-completed" : "hw-uncompleted"}">${totalHomeworksCount-index}</td>`;
+                tableRow.innerHTML += `<td><div class="hw-item ${homeworkCompleted ? "hw-completed" : "hw-uncompleted"}">#${totalHomeworksCount-index}</td>`;
             });
 
             return tableRow;

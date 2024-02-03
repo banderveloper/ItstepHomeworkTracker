@@ -1,15 +1,19 @@
 ﻿using ItstepHomeworkTracker;
 
-if (args.Length < 5)
-{
-    Console.WriteLine("Launch error! Needed 5 launch arguments - username, password, group name, total homeworks count, required percent");
-    Console.WriteLine("Press any key to continue...");
-    Console.ReadKey();
-    Environment.Exit(0);
-}
+Console.Write("Input logbook login: ");
+string logbookLogin = Console.ReadLine();
 
-string logbookLogin = args[0], logbookPassword = args[1], groupName = args[2];
-int totalHomeworksCount = int.Parse(args[3]), requiredHomeworksPercent = int.Parse(args[4]);
+Console.Write("Input logbook password: ");
+string logbookPassword = Console.ReadLine();
+
+Console.Write("Input group name: ");
+string groupName = Console.ReadLine();
+
+Console.Write("Input total count of given homeworks: ");
+int totalHomeworksCount = int.Parse(Console.ReadLine());
+
+Console.WriteLine("Input requred percent of homeworks: ");
+int requiredHomeworksPercent = int.Parse(Console.ReadLine());
 
 var logbook = new LogbookWebDriver
 {
