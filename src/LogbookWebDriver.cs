@@ -34,8 +34,8 @@ public class LogbookWebDriver
         _driver.WaitAndFindElement(CommonBySelectors.LeftMenu);
         WaitBoxLoading();
 
-        OnLogMessageSent?.Invoke(this, new LogbookEventArgs("Navigating to homeworks page..."));  
-        
+        OnLogMessageSent?.Invoke(this, new LogbookEventArgs("Navigating to homeworks page..."));
+
         // go to homeworks page and wait for loading
         _driver.Url = "https://logbook.itstep.org/#/homeWork";
         WaitBoxLoading();
@@ -45,9 +45,9 @@ public class LogbookWebDriver
         if (_driver.ElementVisible(closeButtonSelector))
         {
             _driver.FindElement(closeButtonSelector).Click();
-            OnLogMessageSent?.Invoke(this, new LogbookEventArgs("Closed new homeworks popup window."));   
+            OnLogMessageSent?.Invoke(this, new LogbookEventArgs("Closed new homeworks popup window."));
         }
-        
+
         // click groups dropdown menu
         _driver.FindElement(HomeworksBySelectors.GroupsListDropdownMenu).Click();
 
@@ -64,36 +64,36 @@ public class LogbookWebDriver
             return;
         }
 
-        OnLogMessageSent?.Invoke(this, new LogbookEventArgs($"Chose group {TargetGroupName} in dropdown menu")); 
-        
+        OnLogMessageSent?.Invoke(this, new LogbookEventArgs($"Chose group {TargetGroupName} in dropdown menu"));
+
         // sleep 1s
         Thread.Sleep(1000);
 
-        OnLogMessageSent?.Invoke(this, new LogbookEventArgs("Waiting for homeworks loading..."));   
-        
+        OnLogMessageSent?.Invoke(this, new LogbookEventArgs("Waiting for homeworks loading..."));
+
         WaitBoxLoading();
 
         // dictionary <student name, completed homeworks count>
-        var completedHomeworksList = new List<StudentHomeworkStatistics>();
+        var studentsHomeworks = new List<StudentHomeworks>();
 
-        
+
         // calculate pagination data
         var homeworksPerPage = GetHomeworksCountInPage();
         var totalPagesCount = 0;
-        
-        OnLogMessageSent?.Invoke(this, new LogbookEventArgs($"One page has {homeworksPerPage} homeworks"));   
+
+        OnLogMessageSent?.Invoke(this, new LogbookEventArgs($"One page has {homeworksPerPage} homeworks"));
 
         if (homeworksPerPage == TotalHomeworksCount)
             totalPagesCount = 1;
         else
             totalPagesCount = (int)Math.Ceiling((double)TotalHomeworksCount / homeworksPerPage);
-        
-        OnLogMessageSent?.Invoke(this, new LogbookEventArgs($"I will check {totalPagesCount} page(s)"));    
+
+        OnLogMessageSent?.Invoke(this, new LogbookEventArgs($"I will check {totalPagesCount} page(s)"));
 
         // iterate over each page and collect data about completed homeworks
         for (var currentPage = 1; currentPage <= totalPagesCount; currentPage++)
         {
-            OnLogMessageSent?.Invoke(this, new LogbookEventArgs($"Collecting data from page {currentPage}/{totalPagesCount}")); 
+            OnLogMessageSent?.Invoke(this, new LogbookEventArgs($"Collecting data from page {currentPage}/{totalPagesCount}"));
             // get all student's homework rows
             var studentsHomeworksRows = _driver.FindElements(HomeworksBySelectors.StudentHomeworksRow);
 
@@ -108,7 +108,7 @@ public class LogbookWebDriver
                 // try initialize student in dictionary with 0 hws
                 if (currentPage == 1)
                 {
-                    completedHomeworksList.Add(new StudentHomeworkStatistics(studentName));
+                    studentsHomeworks.Add(new StudentHomeworks { StudentName = studentName });
                 }
 
                 // get all homeworks
@@ -126,8 +126,22 @@ public class LogbookWebDriver
 
                 foreach (var homeworkItem in homeworksItems)
                 {
-                    completedHomeworksList[studentIndex].HomeworksCompleting
-                        .Add(HomeworkItemNewOrCompleted(homeworkItem));
+                    //studentsHomeworks[studentIndex].HomeworksCompleting
+                    //    .Add(HomeworkItemNewOrCompleted(homeworkItem));
+                    var homework = new Homework();
+                    studentsHomeworks[studentIndex].Homeworks.Add(homework);
+
+                    homework.IsCompleted = IsHomeworkCompleted(homeworkItem);
+
+                    if (!homework.IsCompleted) continue;
+
+                    homework.IsChecked = IsHomeworkChecked(homeworkItem);
+
+                    if (!homework.IsChecked) continue;
+
+                    homework.Grade = GetHomeworkGrade(homeworkItem);
+
+                    if (homework.Grade <= 2) homework.IsCompleted = false;
                 }
 
                 // show
@@ -137,17 +151,17 @@ public class LogbookWebDriver
             if (currentPage < totalPagesCount) GoNextHomeworksPage();
         }
 
-        OnLogMessageSent?.Invoke(this, new LogbookEventArgs($"Data collected, started export to {TargetGroupName}.html")); 
-        
-        RenderHTMLStatistics(completedHomeworksList);
-        
+        OnLogMessageSent?.Invoke(this, new LogbookEventArgs($"Data collected, started export to {TargetGroupName}.html"));
+
+        RenderHTMLStatistics(studentsHomeworks);
+
         OnFinished?.Invoke(this, new LogbookEventArgs("Done!", true));
     }
 
     private void Authorize()
     {
-        OnLogMessageSent?.Invoke(this, new LogbookEventArgs("Authorizing...")); 
-        
+        OnLogMessageSent?.Invoke(this, new LogbookEventArgs("Authorizing..."));
+
         _driver.WaitAndFindElement(AuthorizationBySelectors.LoginInput);
 
         var loginInput = _driver.FindElement(AuthorizationBySelectors.LoginInput);
@@ -158,8 +172,8 @@ public class LogbookWebDriver
         passwordInput.SendKeys(AccountPassword);
 
         submitButton.Click();
-        
-        OnLogMessageSent?.Invoke(this, new LogbookEventArgs("Submitted authorization, waiting for home page loading...")); 
+
+        OnLogMessageSent?.Invoke(this, new LogbookEventArgs("Submitted authorization, waiting for home page loading..."));
     }
 
     private void WaitBoxLoading()
@@ -173,29 +187,38 @@ public class LogbookWebDriver
         return firstRow.FindElements(HomeworkRowBySelectors.HomeworkItem).Count;
     }
 
-    private bool HomeworkItemNewOrCompleted(IWebElement homeworkItem)
+    private bool IsHomeworkChecked(IWebElement homeworkItem)
     {
         // try identify homework as new
         try
         {
             homeworkItem.FindElement(HomeworkRowBySelectors.NewHomeworkItem);
-            return true;
-        }
-        catch (Exception)
-        {
-            // ignored
-        }
-
-        // try identify homework as completed
-        try
-        {
-            homeworkItem.FindElement(HomeworkRowBySelectors.CompletedHomeworkItem);
-            return true;
-        }
-        catch (Exception)
-        {
             return false;
         }
+        catch (Exception)
+        {
+            return true;
+        }
+    }
+
+    private bool IsHomeworkCompleted(IWebElement homeworkItem)
+    {
+        // try identify homework as new
+        try
+        {
+            homeworkItem.FindElement(HomeworkRowBySelectors.UnloadedHomeworkItem);
+            return false;
+        }
+        catch (Exception)
+        {
+            return true;
+        }
+    }
+
+    private int GetHomeworkGrade(IWebElement homeworkItem)
+    {
+        var gradeElement = homeworkItem.FindElement(By.CssSelector("span"));
+        return int.Parse(gradeElement.Text);
     }
 
     private void GoNextHomeworksPage()
@@ -203,7 +226,7 @@ public class LogbookWebDriver
         _driver.FindElement(HomeworksBySelectors.HomeworksNextPageButton).Click();
     }
 
-    private void RenderHTMLStatistics(List<StudentHomeworkStatistics> statisticsList)
+    private void RenderHTMLStatistics(List<StudentHomeworks> statisticsList)
     {
         string templateCode = string.Empty;
 
@@ -211,6 +234,8 @@ public class LogbookWebDriver
         {
             templateCode = reader.ReadToEnd();
         }
+
+        //File.WriteAllText("data.json", JsonSerializer.Serialize(statisticsList));
 
         templateCode = templateCode.Replace("%%%array_data%%%", JsonSerializer.Serialize(statisticsList));
         templateCode = templateCode.Replace("%%%total_homeworks_count%%%", TotalHomeworksCount.ToString());
