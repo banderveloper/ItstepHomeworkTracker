@@ -185,9 +185,23 @@
             tableRow.innerHTML += `<td class="nowrap">${completedHomeworksCount} / ${totalHomeworksCount}</td>`;
             tableRow.innerHTML += `<td class="nowrap">${parseInt(completedHomeworksPercent)} / ${requiredCompletePercent}</td>`;
 
-            data.homeworks.forEach((homeworkCompleted, index) => {
-            
-                tableRow.innerHTML += `<td><div class="hw-item ${homeworkCompleted ? "hw-completed" : "hw-uncompleted"}">${totalHomeworksCount-index}</td>`;
+            data.homeworks.forEach((homework, index) => {
+
+                let homeworkClass = homework.is_completed ? "hw-completed" : "hw-uncompleted";
+
+                let homeworkGradeView;
+
+                if (!homework.is_completed && !homework.is_checked) {
+                    homeworkGradeView = '';
+                }
+                else if (homework.is_completed && !homework.is_checked) {
+                    homeworkGradeView = '...';
+                }
+                else {
+                    homeworkGradeView = homework.grade;
+                }
+
+                tableRow.innerHTML += `<td><div class="hw-item ${homeworkClass}">${homeworkGradeView}</td>`;
             });
 
             return tableRow;
