@@ -10,6 +10,8 @@ internal static class WebDriverExtensions
     {
         while (true)
         {
+
+
             try
             {
                 var element = driver.FindElement(by);
