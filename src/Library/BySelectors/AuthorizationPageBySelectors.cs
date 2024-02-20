@@ -21,4 +21,9 @@ internal static class AuthorizationPageBySelectors
     /// Submit button
     /// </summary>
     public static readonly By SubmitButton = By.ClassName("btn-login");
+
+    /// <summary>
+    /// Disappearing span after authorization error
+    /// </summary>
+    public static readonly By AuthorizationErrorSpan = By.ClassName("md-toast-text");
 }
