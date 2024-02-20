@@ -50,11 +50,13 @@ internal class LogbookWebDriver
     /// </summary>
     public void Start()
     {
-
+        Authorize();
     }
 
     private void Authorize()
     {
+        
+        
         // Go to any logbook page and get to auth page if unauthorized
         _driver.Url = "https://logbook.itstep.org/login/index#/";
 
@@ -69,13 +71,11 @@ internal class LogbookWebDriver
         loginInput.SendKeys(Username);
         passwordInput.SendKeys(Password);
 
+        submitButton.Click();
+        
         // TODO: wait for incorrect credentials error
-        if (false)
-        {
-            throw new AuthorizationException("Authorization error. Invalid username or password");
-        }
+        var errorSpan = _driver.FindElementContinuously(AuthorizationPageBySelectors.AuthorizationErrorSpan, 3);
 
         // Submit
-        submitButton.Click();
     }
 }

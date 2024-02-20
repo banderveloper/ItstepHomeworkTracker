@@ -8,7 +8,7 @@ public class HomeworkTracker
     /// <summary>
     /// Parser core
     /// </summary>
-    private LogbookWebDriver _logbookDriver;
+    private readonly LogbookWebDriver _logbookDriver;
 
     /// <summary>
     /// Event, invoked after parsing exception
@@ -94,7 +94,7 @@ public class HomeworkTracker
     /// <exception cref="ArgumentOutOfRangeException">Required percent less than 0 or more than 100</exception>
     public HomeworkTracker AddRequiredHomeworksPercent(int requiredHomeworksPercent)
     {
-        if (requiredHomeworksPercent < 0 || requiredHomeworksPercent > 100)
+        if (requiredHomeworksPercent is < 0 or > 100)
             throw new ArgumentOutOfRangeException(nameof(requiredHomeworksPercent));
 
         _logbookDriver.RequiredHomeworksPercent = requiredHomeworksPercent;
