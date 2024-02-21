@@ -15,7 +15,7 @@ internal class LogbookWebDriver
     /// <summary>
     /// Selenium driver
     /// </summary>
-    private readonly ChromeDriver _driver = new ChromeDriver();
+    private readonly ChromeDriver _driver = new();
 
     /// <summary>
     /// Timeout for waiting page loading / element searching
@@ -55,6 +55,8 @@ internal class LogbookWebDriver
         Authorize();
         ProceedToHomeworkPage();
         SelectGroupHomeworksTab();
+
+        var homeworksPagesCount = GetHomeworksPagesCount();
     }
 
     /// <summary>
@@ -121,9 +123,10 @@ internal class LogbookWebDriver
     {
         // Click on groups list dropdown menu
         _driver.FindElement(HomeworksPageBySelectors.GroupsListDropdownMenu).Click();
-        
+
         // Find link with needed group in dropdown menu
-        var groupLinkElement = _driver.FindElementOrNull(HomeworksPageBySelectors.GetGroupLinkDropdownElement(GroupName));
+        var groupLinkElement =
+            _driver.FindElementOrNull(HomeworksPageBySelectors.GetGroupLinkDropdownElement(GroupName));
 
         // If group with name not found
         if (groupLinkElement is null)
@@ -132,5 +135,20 @@ internal class LogbookWebDriver
         // Element is not clickable by selenium, get element id and click using javascript
         var linkElementId = groupLinkElement.GetAttribute("id");
         _driver.ExecuteScript($"document.getElementById('{linkElementId}').click()");
+        
+        // Wait for box loading
+        _driver.FindElementOrNull(CommonBySelectors.BoxLoader, _timeoutInSeconds);
+        _driver.WaitForElementHide(CommonBySelectors.BoxLoader);
+    }
+
+    /// <summary>
+    /// Get homeworks count in one tab
+    /// </summary>
+    /// <returns>Count of homeworks per page</returns>
+    private int GetHomeworksPagesCount()
+    {
+        // Select first row of homeworks to calculate homeworks per page
+        var firstHomeworksRow = _driver.FindElement(HomeworksPageBySelectors.StudentHomeworksRow);
+        return firstHomeworksRow.FindElements(HomeworkRowBySelectors.HomeworkItem).Count;
     }
 }
