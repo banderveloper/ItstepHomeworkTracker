@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:ItstepHomeworkTracker.Desktop"
         mc:Ignorable="d"
         Title="Homeworks"
-        Height="760" Width="450"
+        Height="860" Width="450"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         Background="{x:Null}"
         AllowsTransparency="True"
@@ -24,9 +24,56 @@
                     <StackPanel Margin="16 10 0 6" Orientation="Horizontal" HorizontalAlignment="Center">
                         <!-- <TextBlock VerticalAlignment="Center" Text="Dark mode"/> -->
                         <!-- <ToggleButton Cursor="Hand" ToolTip="Enable dark mode" Margin="12 0 8 0" x:Name="ThemeToggle" IsChecked="{Binding IsDarkTheme}" Click="ToggleTheme" /> -->
-                        
+                        <Button x:Name="ExitButton" ToolTip="Close application" Content="Exit"
+                                Click="OnExitButtonClick" Margin="0 0 10 0" />
                     </StackPanel>
                 </materialDesign:PopupBox>
+
+                <Image Margin="0 20 0 5" Source="./Resources/logo.png" Height="100" />
+
+                <TextBlock Margin="0 25 0 5" HorizontalAlignment="Center" FontSize="28" FontWeight="Bold"
+                           Text="Homeworks Tracker" />
+
+                <TextBlock FontSize="17" FontWeight="SemiBold" HorizontalAlignment="Center"
+                           Text="Please fill data below" />
+
+                <!-- Username textbox-->
+                <TextBox Margin="0 50 0 0" x:Name="UsernameTextBox" Width="300" FontSize="18"
+                         materialDesign:HintAssist.Hint="Logbook login"
+                         BorderBrush="{DynamicResource MaterialDesignDivider}"
+                         Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+
+                <!-- Password textbox -->
+                <PasswordBox Margin="0 20 0 0" x:Name="PasswordTextBox" Width="300" FontSize="18"
+                             materialDesign:HintAssist.Hint="Logbook password"
+                             BorderBrush="{DynamicResource MaterialDesignDivider}"
+                             Style="{StaticResource MaterialDesignOutlinedRevealPasswordBox}" />
+
+                <!-- Group name textbox -->
+                <TextBox Margin="0 20 0 0" x:Name="GroupNameTextBox" Width="300" FontSize="18"
+                         materialDesign:HintAssist.Hint="Group name"
+                         BorderBrush="{DynamicResource MaterialDesignDivider}"
+                         Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+
+                <!-- Homeworks count textbox -->
+                <TextBox Margin="0 20 0 0" x:Name="HomeworksCountTextBox" Width="300" FontSize="18"
+                         materialDesign:HintAssist.Hint="Homeworks count"
+                         BorderBrush="{DynamicResource MaterialDesignDivider}"
+                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                         PreviewTextInput="OnNumberTextBoxValidate" />
+
+                <!-- Required homeworks percent textbox  -->
+                <TextBox Margin="0 20 0 0" x:Name="RequiredHomeworksPercentTextBox" Width="300" FontSize="18"
+                         materialDesign:HintAssist.Hint="Required homeworks percent"
+                         BorderBrush="{DynamicResource MaterialDesignDivider}"
+                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                         Text="80"
+                         PreviewTextInput="OnNumberTextBoxValidate" />
+
+                <!-- Parsing start button -->
+                <Button Margin="0 20 0 0" x:Name="StartButton" Style="{StaticResource MaterialDesignFlatMidBgButton}"
+                        materialDesign:ShadowAssist.ShadowDepth="Depth0" Height="53" Width="300"
+                        materialDesign:ButtonAssist.CornerRadius="10" FontSize="18" Content="START" />
             </StackPanel>
 
         </materialDesign:DialogHost>
