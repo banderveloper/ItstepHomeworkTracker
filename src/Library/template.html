@@ -106,8 +106,8 @@
     <div class="content">
 
         <div class="heading">
-            <h1 class="group-name">3312</h1>
-            <h2 class="total-hw-count">Усього ДЗ: <span>0</span></h2>
+            <h1 class="group-name"></h1>
+            <h2 class="total-hw-count">Всього ДЗ: <span>0</span></h2>
         </div>
 
         <table class="content-table">
@@ -132,10 +132,12 @@
         const visualTh = document.querySelector('.visual-th');
         const tBody = document.querySelector('tbody');
         const totalHwCountElement = document.querySelector('.total-hw-count > span');
+        const groupNameElement = document.querySelector('.group-name');
 
         const data = JSON.parse('%%%array_data%%%');
         const totalHomeworksCount = %%%total_homeworks_count%%%;
         const requiredCompletePercent = %%%requiredCompletePercent%%%;
+        const groupName = %%%groupName%%%;
 
         //  const totalHomeworksCount = 11;
         //  const requiredCompletePercent = 80;
@@ -160,12 +162,14 @@
                 tBody.appendChild(getTableRowElement(item, index));
             });
 
+            groupNameElement.innerHTML = groupName;
+            document.title = groupName;
         });
 
         function getTableRowElement(data, index) {
 
             console.log(data.homeworks);
-            let completedHomeworksCount = data.homeworks.filter(item => item == true).length;
+            let completedHomeworksCount = data.homeworks.filter(item => item.isCompleted).length;
             let completedHomeworksPercent = completedHomeworksCount * 100 / totalHomeworksCount;
 
             let tableRow = document.createElement('tr');
@@ -181,24 +185,20 @@
             }
 
             tableRow.innerHTML += `<td>${index + 1}</td>`;
-            tableRow.innerHTML += `<td>${data.name}</td>`;
+            tableRow.innerHTML += `<td>${data.studentName}</td>`;
             tableRow.innerHTML += `<td class="nowrap">${completedHomeworksCount} / ${totalHomeworksCount}</td>`;
             tableRow.innerHTML += `<td class="nowrap">${parseInt(completedHomeworksPercent)} / ${requiredCompletePercent}</td>`;
 
             data.homeworks.forEach((homework, index) => {
 
-                let homeworkClass = homework.is_completed ? "hw-completed" : "hw-uncompleted";
+                let homeworkClass = homework.isCompleted ? "hw-completed" : "hw-uncompleted";
+                let homeworkGradeView = homework.grade;
 
-                let homeworkGradeView;
-
-                if (!homework.is_completed && !homework.is_checked) {
+                if(!homework.isCompleted){
                     homeworkGradeView = '';
                 }
-                else if (homework.is_completed && !homework.is_checked) {
+                if(homework.isCompleted && homework.grade == null){
                     homeworkGradeView = '...';
-                }
-                else {
-                    homeworkGradeView = homework.grade;
                 }
 
                 tableRow.innerHTML += `<td><div class="hw-item ${homeworkClass}">${homeworkGradeView}</td>`;
