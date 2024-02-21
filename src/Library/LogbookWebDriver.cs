@@ -56,7 +56,10 @@ internal class LogbookWebDriver
         ProceedToHomeworkPage();
         SelectGroupHomeworksTab();
 
-        var homeworksPagesCount = GetHomeworksPagesCount();
+        var homeworksPerPage = GetHomeworksCountPerPage();
+        var pagesCount = GetTotalPagesCount(homeworksPerPage);
+        
+        // todo
     }
 
     /// <summary>
@@ -145,10 +148,23 @@ internal class LogbookWebDriver
     /// Get homeworks count in one tab
     /// </summary>
     /// <returns>Count of homeworks per page</returns>
-    private int GetHomeworksPagesCount()
+    private int GetHomeworksCountPerPage()
     {
         // Select first row of homeworks to calculate homeworks per page
         var firstHomeworksRow = _driver.FindElement(HomeworksPageBySelectors.StudentHomeworksRow);
         return firstHomeworksRow.FindElements(HomeworkRowBySelectors.HomeworkItem).Count;
+    }
+
+    /// <summary>
+    /// Get amount of pages, needed to be parsed for full data collection
+    /// </summary>
+    /// <param name="homeworksPerPage">Homeworks count per one page</param>
+    /// <returns>Count of pages, needed to be checked</returns>
+    private int GetTotalPagesCount(int homeworksPerPage)
+    {
+        if (homeworksPerPage == TotalHomeworksCount)
+            return 1;
+        
+        return (int)Math.Ceiling((double)TotalHomeworksCount / homeworksPerPage);
     }
 }
