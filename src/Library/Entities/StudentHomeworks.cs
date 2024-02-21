@@ -17,11 +17,17 @@ internal class StudentHomeworks
     /// List of all student's homework
     /// </summary>
     [JsonPropertyName("homeworks")]
-    public IList<Homework> Homeworks { get; set; }
+    public ICollection<Homework> Homeworks { get; set; }
 
     public StudentHomeworks()
     {
         StudentName = string.Empty;
+        Homeworks = new List<Homework>();
+    }
+
+    public StudentHomeworks(string studentName)
+    {
+        StudentName = studentName;
         Homeworks = new List<Homework>();
     }
 }
