@@ -15,6 +15,11 @@ public class HomeworkTracker
     /// </summary>
     public event HomeworkTrackerDelegate? OnParsingError;
 
+    /// <summary>
+    /// Event, invoked after successful parsing and result file generation
+    /// </summary>
+    public event HomeworkTrackerDelegate? OnParsingSucceed;
+
     public HomeworkTracker()
         => _logbookDriver = new LogbookWebDriver();
 
@@ -26,6 +31,7 @@ public class HomeworkTracker
         try
         {
             _logbookDriver.Start();
+            OnParsingSucceed?.Invoke(this, new HomeworkTrackerEventArgs(string.Empty));
         }
         catch (Exception ex)
         {
