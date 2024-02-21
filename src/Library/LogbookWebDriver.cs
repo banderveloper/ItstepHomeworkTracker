@@ -1,7 +1,9 @@
-﻿using ItstepHomeworkTracker.Library.BySelectors;
+﻿using System.Security.Authentication;
+using ItstepHomeworkTracker.Library.BySelectors;
 using ItstepHomeworkTracker.Library.Exceptions;
 using ItstepHomeworkTracker.Library.Extensions;
 using OpenQA.Selenium.Chrome;
+using TimeoutException = ItstepHomeworkTracker.Library.Exceptions.TimeoutException;
 
 namespace ItstepHomeworkTracker.Library;
 
@@ -55,13 +57,15 @@ internal class LogbookWebDriver
 
     private void Authorize()
     {
-        
-        
         // Go to any logbook page and get to auth page if unauthorized
         _driver.Url = "https://logbook.itstep.org/login/index#/";
 
         // Wait for login input loading and find it
-        var loginInput = _driver.FindElementContinuously(AuthorizationPageBySelectors.LoginInput, _timeoutInSeconds);
+        var loginInput = _driver.FindElement(AuthorizationPageBySelectors.LoginInput, _timeoutInSeconds);
+
+        // If login input not found after seconds of timeout - exception
+        if (loginInput is null)
+            throw new TimeoutException($"Login input not found after {_timeoutInSeconds} seconds");
 
         // We know that page is loaded, without timeout find password input and submit button
         var passwordInput = _driver.FindElement(AuthorizationPageBySelectors.PasswordInput);
@@ -71,11 +75,14 @@ internal class LogbookWebDriver
         loginInput.SendKeys(Username);
         passwordInput.SendKeys(Password);
 
+        // Submit
         submitButton.Click();
         
-        // TODO: wait for incorrect credentials error
-        var errorSpan = _driver.FindElementContinuously(AuthorizationPageBySelectors.AuthorizationErrorSpan, 3);
+        // Wait 3 seconds for auth error span
+        var errorSpan = _driver.FindElement(AuthorizationPageBySelectors.AuthorizationErrorSpan, timeoutInSeconds: 5);
 
-        // Submit
+        // If auth error exists - auth error
+        if (errorSpan is not null)
+            throw new AuthenticationException("Authentication error. " + errorSpan.Text);
     }
 }

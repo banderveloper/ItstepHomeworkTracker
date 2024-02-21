@@ -10,19 +10,26 @@ namespace ItstepHomeworkTracker.Library.Extensions;
 internal static class ChromeWebDriverExtensions
 {
     /// <summary>
-    /// Synchronously wait for element during given timeout
+    /// Decorator for default FindElement method, for optional timeout 
     /// </summary>
     /// <param name="driver">Extension method target</param>
     /// <param name="by">Selenium by selector, target of finding</param>
     /// <param name="timeoutInSeconds">Timeout for finding</param>
-    /// <returns>Found web element</returns>
-    public static IWebElement FindElementContinuously(this ChromeDriver driver, By by, int timeoutInSeconds)
+    /// <returns>Found web element, or null if not found</returns>
+    public static IWebElement? FindElement(this ChromeDriver driver, By by, int timeoutInSeconds = 0)
     {
-        if (timeoutInSeconds > 0)
+        try
         {
+            // If no timeout - just find element
+            if (timeoutInSeconds <= 0) return driver.FindElement(by);
+
+            // if timeout - wait and find
             var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeoutInSeconds));
             return wait.Until(drv => drv.FindElement(by));
         }
-        return driver.FindElement(by);
+        catch (Exception)
+        {
+            return null;
+        }
     }
 }
