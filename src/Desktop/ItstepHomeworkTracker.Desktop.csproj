@@ -16,4 +16,10 @@
     <PackageReference Include="MaterialDesignThemes" Version="4.8.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="ItstepHomeworkTracker.Library">
+      <HintPath>..\Library\bin\Release\net8.0\publish\ItstepHomeworkTracker.Library.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

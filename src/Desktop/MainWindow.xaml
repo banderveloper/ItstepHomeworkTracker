@@ -41,26 +41,26 @@
                 <TextBox Margin="0 50 0 0" x:Name="UsernameTextBox" Width="300" FontSize="18"
                          materialDesign:HintAssist.Hint="Logbook login"
                          BorderBrush="{DynamicResource MaterialDesignDivider}"
-                         Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+                         Style="{StaticResource MaterialDesignOutlinedTextBox}" Tag="username" />
 
                 <!-- Password textbox -->
                 <PasswordBox Margin="0 20 0 0" x:Name="PasswordTextBox" Width="300" FontSize="18"
                              materialDesign:HintAssist.Hint="Logbook password"
                              BorderBrush="{DynamicResource MaterialDesignDivider}"
-                             Style="{StaticResource MaterialDesignOutlinedRevealPasswordBox}" />
+                             Style="{StaticResource MaterialDesignOutlinedRevealPasswordBox}" Tag="password" />
 
                 <!-- Group name textbox -->
                 <TextBox Margin="0 20 0 0" x:Name="GroupNameTextBox" Width="300" FontSize="18"
                          materialDesign:HintAssist.Hint="Group name"
                          BorderBrush="{DynamicResource MaterialDesignDivider}"
-                         Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+                         Style="{StaticResource MaterialDesignOutlinedTextBox}" Tag="groupName" />
 
                 <!-- Homeworks count textbox -->
                 <TextBox Margin="0 20 0 0" x:Name="HomeworksCountTextBox" Width="300" FontSize="18"
                          materialDesign:HintAssist.Hint="Homeworks count"
                          BorderBrush="{DynamicResource MaterialDesignDivider}"
                          Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                         PreviewTextInput="OnNumberTextBoxValidate" />
+                         PreviewTextInput="OnNumberTextBoxValidate" Tag="totalHomeworksCount" />
 
                 <!-- Required homeworks percent textbox  -->
                 <TextBox Margin="0 20 0 0" x:Name="RequiredHomeworksPercentTextBox" Width="300" FontSize="18"
@@ -68,12 +68,13 @@
                          BorderBrush="{DynamicResource MaterialDesignDivider}"
                          Style="{StaticResource MaterialDesignOutlinedTextBox}"
                          Text="80"
-                         PreviewTextInput="OnNumberTextBoxValidate" />
+                         PreviewTextInput="OnNumberTextBoxValidate" Tag="requiredHomeworksPercent" />
 
                 <!-- Parsing start button -->
                 <Button Margin="0 20 0 0" x:Name="StartButton" Style="{StaticResource MaterialDesignFlatMidBgButton}"
                         materialDesign:ShadowAssist.ShadowDepth="Depth0" Height="53" Width="300"
-                        materialDesign:ButtonAssist.CornerRadius="10" FontSize="18" Content="START" />
+                        materialDesign:ButtonAssist.CornerRadius="10" FontSize="18" Content="START"
+                        Click="OnStartButtonClick" />
             </StackPanel>
 
         </materialDesign:DialogHost>
