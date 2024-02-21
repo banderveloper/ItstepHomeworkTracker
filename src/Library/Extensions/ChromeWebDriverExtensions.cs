@@ -16,7 +16,7 @@ internal static class ChromeWebDriverExtensions
     /// <param name="by">Selenium by selector, target of finding</param>
     /// <param name="timeoutInSeconds">Timeout for finding</param>
     /// <returns>Found web element, or null if not found</returns>
-    public static IWebElement? FindElement(this ChromeDriver driver, By by, int timeoutInSeconds = 0)
+    public static IWebElement? FindElementOrNull(this ChromeDriver driver, By by, int timeoutInSeconds = 0)
     {
         try
         {
