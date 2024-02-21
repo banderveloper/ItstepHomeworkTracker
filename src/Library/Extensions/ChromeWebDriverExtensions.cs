@@ -32,4 +32,28 @@ internal static class ChromeWebDriverExtensions
             return null;
         }
     }
+
+    /// <summary>
+    /// Start loop until given element disapper
+    /// </summary>
+    /// <param name="driver">Extension method target</param>
+    /// <param name="by">Selenium by selector, target of disappear waiting</param>
+    /// <param name="timeoutInSeconds">Wait timeout, maximum by default</param>
+    public static void WaitForElementDisappear(this ChromeDriver driver, By by, int timeoutInSeconds = int.MaxValue)
+    {
+        var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeoutInSeconds));
+        wait.Until(webDriver => webDriver.FindElements(by).Count == 0);
+    }
+    
+    /// <summary>
+    /// Start loop until given element hide
+    /// </summary>
+    /// <param name="driver">Extension method target</param>
+    /// <param name="by">Selenium by selector, target of hide waiting</param>
+    /// <param name="timeoutInSeconds">Wait timeout, maximum by default</param>
+    public static void WaitForElementHide(this ChromeDriver driver, By by, int timeoutInSeconds = int.MaxValue)
+    {
+        var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeoutInSeconds));
+        wait.Until(webDriver => !webDriver.FindElement(by).Displayed);
+    }
 }

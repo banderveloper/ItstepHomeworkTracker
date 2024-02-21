@@ -1,6 +1,5 @@
 ﻿using System.Security.Authentication;
 using ItstepHomeworkTracker.Library.BySelectors;
-using ItstepHomeworkTracker.Library.Exceptions;
 using ItstepHomeworkTracker.Library.Extensions;
 using OpenQA.Selenium.Chrome;
 using TimeoutException = ItstepHomeworkTracker.Library.Exceptions.TimeoutException;
@@ -15,12 +14,12 @@ internal class LogbookWebDriver
     /// <summary>
     /// Selenium driver
     /// </summary>
-    private ChromeDriver _driver = new ChromeDriver();
+    private readonly ChromeDriver _driver = new ChromeDriver();
 
     /// <summary>
     /// Timeout for waiting page loading / element searching
     /// </summary>
-    private int _timeoutInSeconds = 50;
+    private readonly int _timeoutInSeconds = 10;
 
     /// <summary>
     /// Logbook username
@@ -52,7 +51,25 @@ internal class LogbookWebDriver
     /// </summary>
     public void Start()
     {
+        // Pass authorization
         Authorize();
+        
+        // Wait for page rendering and wait for box loading
+        _driver.FindElement(CommonBySelectors.BoxLoader, _timeoutInSeconds);
+        _driver.WaitForElementHide(CommonBySelectors.BoxLoader);
+
+        // go to homeworks page
+        _driver.Url = "https://logbook.itstep.org/#/homeWork";
+        
+        // Wait for page rendering and wait for box loading
+        _driver.FindElement(CommonBySelectors.BoxLoader, _timeoutInSeconds);
+        _driver.WaitForElementHide(CommonBySelectors.BoxLoader);
+
+        // If opened new homeworks popup - close it
+        var popupCloseButton = _driver.FindElement(HomeworksPageBySelectors.NewHomeworksPopupCloseButton);
+        popupCloseButton?.Click();
+        
+        
     }
 
     private void Authorize()
@@ -85,4 +102,6 @@ internal class LogbookWebDriver
         if (errorSpan is not null)
             throw new AuthenticationException("Authentication error. " + errorSpan.Text);
     }
+    
+    
 }
