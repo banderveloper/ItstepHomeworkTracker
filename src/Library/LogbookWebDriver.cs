@@ -1,5 +1,6 @@
 ﻿using System.Security.Authentication;
 using ItstepHomeworkTracker.Library.BySelectors;
+using ItstepHomeworkTracker.Library.Exceptions;
 using ItstepHomeworkTracker.Library.Extensions;
 using OpenQA.Selenium.Chrome;
 using TimeoutException = ItstepHomeworkTracker.Library.Exceptions.TimeoutException;
@@ -51,34 +52,23 @@ internal class LogbookWebDriver
     /// </summary>
     public void Start()
     {
-        // Pass authorization
         Authorize();
-        
-        // Wait for page rendering and wait for box loading
-        _driver.FindElement(CommonBySelectors.BoxLoader, _timeoutInSeconds);
-        _driver.WaitForElementHide(CommonBySelectors.BoxLoader);
-
-        // go to homeworks page
-        _driver.Url = "https://logbook.itstep.org/#/homeWork";
-        
-        // Wait for page rendering and wait for box loading
-        _driver.FindElement(CommonBySelectors.BoxLoader, _timeoutInSeconds);
-        _driver.WaitForElementHide(CommonBySelectors.BoxLoader);
-
-        // If opened new homeworks popup - close it
-        var popupCloseButton = _driver.FindElement(HomeworksPageBySelectors.NewHomeworksPopupCloseButton);
-        popupCloseButton?.Click();
-        
-        
+        ProceedToHomeworkPage();
+        SelectGroupHomeworksTab();
     }
 
+    /// <summary>
+    /// Proceed authorization page
+    /// </summary>
+    /// <exception cref="TimeoutException">Page is not loaded after timeout</exception>
+    /// <exception cref="AuthenticationException">Authentication failed</exception>
     private void Authorize()
     {
         // Go to any logbook page and get to auth page if unauthorized
         _driver.Url = "https://logbook.itstep.org/login/index#/";
 
         // Wait for login input loading and find it
-        var loginInput = _driver.FindElement(AuthorizationPageBySelectors.LoginInput, _timeoutInSeconds);
+        var loginInput = _driver.FindElementOrNull(AuthorizationPageBySelectors.LoginInput, _timeoutInSeconds);
 
         // If login input not found after seconds of timeout - exception
         if (loginInput is null)
@@ -96,12 +86,51 @@ internal class LogbookWebDriver
         submitButton.Click();
         
         // Wait 3 seconds for auth error span
-        var errorSpan = _driver.FindElement(AuthorizationPageBySelectors.AuthorizationErrorSpan, timeoutInSeconds: 5);
+        var errorSpan = _driver.FindElementOrNull(AuthorizationPageBySelectors.AuthorizationErrorSpan, timeoutInSeconds: 5);
 
         // If auth error exists - auth error
         if (errorSpan is not null)
             throw new AuthenticationException("Authentication error. " + errorSpan.Text);
     }
-    
-    
+
+    /// <summary>
+    /// Go to homeworks page and close potential popup form
+    /// </summary>
+    private void ProceedToHomeworkPage()
+    {
+        // Wait for page rendering and wait for box loading
+        _driver.FindElementOrNull(CommonBySelectors.BoxLoader, _timeoutInSeconds);
+        _driver.WaitForElementHide(CommonBySelectors.BoxLoader);
+
+        // go to homeworks page
+        _driver.Url = "https://logbook.itstep.org/#/homeWork";
+        
+        // Wait for page rendering and wait for box loading
+        _driver.FindElementOrNull(CommonBySelectors.BoxLoader, _timeoutInSeconds);
+        _driver.WaitForElementHide(CommonBySelectors.BoxLoader);
+
+        // If opened new homeworks popup - close it
+        var popupCloseButton = _driver.FindElement(HomeworksPageBySelectors.NewHomeworksPopupCloseButton);
+        popupCloseButton?.Click();
+    }
+
+    /// <summary>
+    /// Open groups dropdown menu and select needed, invoking update of homeworks list 
+    /// </summary>
+    private void SelectGroupHomeworksTab()
+    {
+        // Click on groups list dropdown menu
+        _driver.FindElement(HomeworksPageBySelectors.GroupsListDropdownMenu).Click();
+        
+        // Find link with needed group in dropdown menu
+        var groupLinkElement = _driver.FindElementOrNull(HomeworksPageBySelectors.GetGroupLinkDropdownElement(GroupName));
+
+        // If group with name not found
+        if (groupLinkElement is null)
+            throw new GroupNotFoundException($"Group '{GroupName}' not found");
+
+        // Element is not clickable by selenium, get element id and click using javascript
+        var linkElementId = groupLinkElement.GetAttribute("id");
+        _driver.ExecuteScript($"document.getElementById('{linkElementId}').click()");
+    }
 }
