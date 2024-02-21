@@ -2,12 +2,18 @@
 
 namespace ItstepHomeworkTracker.Library.BySelectors;
 
+/// <summary>
+/// By selectors for homeworks row
+/// </summary>
 internal static class HomeworkRowBySelectors
 {
+    /// <summary>
+    /// Student name element
+    /// </summary>
     public static By StudentNameElement = By.CssSelector("td[class='student-name'] p");
+    
+    /// <summary>
+    /// Top-level homework element
+    /// </summary>
     public static By HomeworkItem = By.ClassName("hw_selects");
-
-    public static By CompletedHomeworkItem = By.ClassName("hw_checked");
-    public static By NewHomeworkItem = By.ClassName("hw_new");
-    public static By UnloadedHomeworkItem = By.ClassName("hw_not-loaded");
 }
