@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.IO;
+using System.Net.NetworkInformation;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -27,6 +28,13 @@ public partial class MainWindow : Window
     {
         _defaultTextBoxBrush = UsernameTextBox.BorderBrush;
         RequiredHomeworksPercentTextBox.Text = "80";
+
+        if (!IsLogbookAvailable())
+        {
+            MessageBox.Show(
+                "Logbook is not available. Check your internet connection and VPN enabled (if you are outside the academy)",
+                "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
     }
 
     private void OnExitButtonClick(object sender, RoutedEventArgs e)
@@ -84,7 +92,8 @@ public partial class MainWindow : Window
         // C:\Users....
         var resultFileFullName = new FileInfo($"./results/{resultFileShortName}").FullName;
 
-        var messageBoxResult = MessageBox.Show($"File {resultFileShortName} is created. Do you wanna open it now?", "Done!",
+        var messageBoxResult = MessageBox.Show($"File {resultFileShortName} is created. Do you wanna open it now?",
+            "Done!",
             MessageBoxButton.YesNo, MessageBoxImage.Question);
 
         if (messageBoxResult == MessageBoxResult.Yes)
@@ -106,9 +115,20 @@ public partial class MainWindow : Window
     {
         var textBoxes = this.FindVisualChildren<TextBox>().Where(tb => tb.Text.Length == 0);
         foreach (var textBox in textBoxes) textBox.BorderBrush = Brushes.IndianRed;
-        
+
         var passwordBox = this.FindVisualChildren<PasswordBox>().FirstOrDefault(pb => pb.Password.Length == 0);
         if (passwordBox != null) passwordBox.BorderBrush = Brushes.IndianRed;
+    }
+
+    private bool IsLogbookAvailable()
+    {
+        var pingSender = new Ping();
+        const int timeout = 1000;
+
+        var pingOptions = new PingOptions(64, true);
+        var pingReply = pingSender.Send("logbook.itstep.org", timeout, "hello"u8.ToArray(), pingOptions);
+
+        return pingReply.Status == IPStatus.Success;
     }
 
     protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
