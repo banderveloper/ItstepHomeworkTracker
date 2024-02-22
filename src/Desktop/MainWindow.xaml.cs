@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.IO;
-using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -8,7 +7,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using ItstepHomeworkTracker.Desktop.Extensions;
 using ItstepHomeworkTracker.Library;
-using MaterialDesignColors;
 
 namespace ItstepHomeworkTracker.Desktop;
 
@@ -81,7 +79,19 @@ public partial class MainWindow : Window
 
     private void OnTrackerFinish(object sender, HomeworkTrackerEventArgs e)
     {
-        MessageBox.Show("Done!");
+        // 3322.html
+        var resultFileShortName = GroupNameTextBox.Text + ".html";
+        // C:\Users....
+        var resultFileFullName = new FileInfo($"./results/{resultFileShortName}").FullName;
+
+        var messageBoxResult = MessageBox.Show($"File {resultFileShortName} is created. Do you wanna open it now?", "Done!",
+            MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+        if (messageBoxResult == MessageBoxResult.Yes)
+        {
+            var processStartInfo = new ProcessStartInfo(resultFileFullName) { UseShellExecute = true };
+            Process.Start(processStartInfo);
+        }
     }
 
     private bool IsTextBoxesFilled()
