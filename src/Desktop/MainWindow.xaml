@@ -14,7 +14,7 @@
         WindowStyle="None">
 
     <materialDesign:Card UniformCornerRadius="15" Background="{DynamicResource MaterialDesignPaper}" Margin="25"
-                         materialDesign:ShadowAssist.ShadowDepth="Depth4">
+                         materialDesign:ShadowAssist.ShadowDepth="Depth4" Loaded="OnLoad">
 
         <materialDesign:DialogHost CloseOnClickAway="True" x:Name="DialogHost">
 
@@ -41,34 +41,37 @@
                 <TextBox Margin="0 50 0 0" x:Name="UsernameTextBox" Width="300" FontSize="18"
                          materialDesign:HintAssist.Hint="Logbook login"
                          BorderBrush="{DynamicResource MaterialDesignDivider}"
-                         Style="{StaticResource MaterialDesignOutlinedTextBox}" Tag="username" />
+                         Style="{StaticResource MaterialDesignOutlinedTextBox}" TextChanged="OnTextBoxTextChange" />
 
                 <!-- Password textbox -->
                 <PasswordBox Margin="0 20 0 0" x:Name="PasswordTextBox" Width="300" FontSize="18"
                              materialDesign:HintAssist.Hint="Logbook password"
                              BorderBrush="{DynamicResource MaterialDesignDivider}"
-                             Style="{StaticResource MaterialDesignOutlinedRevealPasswordBox}" Tag="password" />
+                             Style="{StaticResource MaterialDesignOutlinedRevealPasswordBox}" Tag="password"
+                             PasswordChanged="OnPasswordBoxChange" />
 
                 <!-- Group name textbox -->
                 <TextBox Margin="0 20 0 0" x:Name="GroupNameTextBox" Width="300" FontSize="18"
                          materialDesign:HintAssist.Hint="Group name"
                          BorderBrush="{DynamicResource MaterialDesignDivider}"
-                         Style="{StaticResource MaterialDesignOutlinedTextBox}" Tag="groupName" />
+                         Style="{StaticResource MaterialDesignOutlinedTextBox}" Tag="groupName"
+                         TextChanged="OnTextBoxTextChange" />
 
                 <!-- Homeworks count textbox -->
                 <TextBox Margin="0 20 0 0" x:Name="HomeworksCountTextBox" Width="300" FontSize="18"
                          materialDesign:HintAssist.Hint="Homeworks count"
                          BorderBrush="{DynamicResource MaterialDesignDivider}"
                          Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                         PreviewTextInput="OnNumberTextBoxValidate" Tag="totalHomeworksCount" />
+                         PreviewTextInput="OnNumberTextBoxValidate" Tag="totalHomeworksCount"
+                         TextChanged="OnTextBoxTextChange" />
 
                 <!-- Required homeworks percent textbox  -->
                 <TextBox Margin="0 20 0 0" x:Name="RequiredHomeworksPercentTextBox" Width="300" FontSize="18"
                          materialDesign:HintAssist.Hint="Required homeworks percent"
                          BorderBrush="{DynamicResource MaterialDesignDivider}"
                          Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                         Text="80"
-                         PreviewTextInput="OnNumberTextBoxValidate" Tag="requiredHomeworksPercent" />
+                         PreviewTextInput="OnNumberTextBoxValidate" Tag="requiredHomeworksPercent"
+                         TextChanged="OnTextBoxTextChange" />
 
                 <!-- Parsing start button -->
                 <Button Margin="0 20 0 0" x:Name="StartButton" Style="{StaticResource MaterialDesignFlatMidBgButton}"
