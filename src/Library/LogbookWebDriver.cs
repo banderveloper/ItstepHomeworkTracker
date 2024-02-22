@@ -61,7 +61,7 @@ internal class LogbookWebDriver
 
         var homeworksPerPage = GetHomeworksCountPerPage();
         var pagesCount = GetTotalPagesCount(homeworksPerPage);
-        
+
         var studentsHomeworksList = GetAllStudentsHomeworks(pagesCount, homeworksPerPage);
         RenderHTMLResult(studentsHomeworksList);
     }
@@ -119,9 +119,12 @@ internal class LogbookWebDriver
         _driver.FindElementOrNull(CommonBySelectors.BoxLoader, _timeoutInSeconds);
         _driver.WaitForElementHide(CommonBySelectors.BoxLoader);
 
-        // If opened new homeworks popup - close it
-        var popupCloseButton = _driver.FindElement(HomeworksPageBySelectors.NewHomeworksPopupCloseButton);
-        popupCloseButton?.Click();
+        // Get potential popup window with new homeworks
+        var popupCloseButton = _driver.FindElementOrNull(HomeworksPageBySelectors.NewHomeworksPopupCloseButton);
+        
+        // If popup opened - close it
+        if (popupCloseButton is { Enabled: true, Displayed: true })
+            popupCloseButton.Click();
     }
 
     /// <summary>
@@ -222,14 +225,14 @@ internal class LogbookWebDriver
             case "hw_overdue":
                 result.IsCompleted = false;
                 break;
-            
+
             // homework loaded but teacher doesn't checked it
             // or homework is on recheck
             case "hw_new":
             case "hw_retake":
                 result.IsCompleted = true;
                 break;
-            
+
             // homework loaded and teacher checked it
             case "hw_checked":
                 result.IsCompleted = true;
@@ -237,7 +240,7 @@ internal class LogbookWebDriver
                 var gradeElement = homeworkElement.FindElement(By.TagName("span"));
                 result.Grade = int.Parse(gradeElement.Text);
                 break;
-            
+
             // if unknown class
             default:
                 throw new Exception("Unknown homework type");
@@ -275,7 +278,7 @@ internal class LogbookWebDriver
 
                 // get homeworks elements from row, optionally don't take all hws from last page
                 var homeworksElements = GetHomeworksElementsFromRow(homeworkRow, page, pagesCount, homeworksPerPage);
-                
+
                 // iterate over homeworks elements
                 foreach (var homeworkElement in homeworksElements)
                 {
