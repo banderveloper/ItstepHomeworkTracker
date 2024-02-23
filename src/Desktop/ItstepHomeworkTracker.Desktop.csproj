@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="C:\Users\Nikita\Desktop\ItstepHomeworkTracker\src\Library\bin\net8.0\win-x64\publish\ItstepHomeworkTracker.Library.dll" />
+    <Reference Include="..\Library\bin\net8.0\win-x64\publish\ItstepHomeworkTracker.Library.dll" />
   </ItemGroup>
 
 </Project>
