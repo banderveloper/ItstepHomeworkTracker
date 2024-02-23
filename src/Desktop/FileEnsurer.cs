@@ -12,13 +12,13 @@ public static class FileEnsurer
     /// Direct link to download template.html file
     /// </summary>
     private static string _templateFileDownloadLink =
-        "https://download1654.mediafire.com/gl3uzmwv26sgFHg4RCvC3XBInQri-dirsfUAk9Ur58809hX2pMx5rFQA1CYTJ46VlVPxDOYK9SRkd_uBhcxxpljNtJ1RyybViknOM8DeJaU9Hhk8gkVG_BbAAufOtrE-L641Ymb4nY5SHNdHIZbt278TxWnLxoz5VrYQswbMOFQm/4hgh8n6s0n2jzdu/template.html";
+        "https://drive.google.com/uc?id=1dTHKe_C9Cpwahx1TI2WDSgIe37dZyaky&export=download";
 
     /// <summary>
     /// Direct link to download selenium-manager.exe
     /// </summary>
     private static string _seleniumManagerDownloadLink =
-        "https://download1509.mediafire.com/kcp5ae8jzpigUCgVVv2khPZGQd7hqDHlo8J4Cr0VTmHyEBvn7qjX_JZYBRBGoR4X7hXcnq-NnQBbIQHRAhyKQN-khenCRs_12XNVVxb6_DG4tPrPxXmTraks3orZqHKASDy5Qd2M23e2cplYuc_lI_QN3RXe566M2EDYbS6MyF0x/zeyoxljbjsdrjzo/selenium-manager.exe";
+        "https://drive.google.com/uc?id=1F9ThDj1h6V3F2SZfAYw2u9gFrhzSQv3c&export=download";
 
     /// <summary>
     /// Ensure that all directories and files are exists, if not - create or download
