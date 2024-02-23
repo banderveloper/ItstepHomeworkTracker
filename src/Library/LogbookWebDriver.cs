@@ -63,7 +63,18 @@ internal class LogbookWebDriver
         var pagesCount = GetTotalPagesCount(homeworksPerPage);
 
         var studentsHomeworksList = GetAllStudentsHomeworks(pagesCount, homeworksPerPage);
+        Shutdown();
         RenderHTMLResult(studentsHomeworksList);
+    }
+
+    /// <summary>
+    /// Stop driver
+    /// </summary>
+    public void Shutdown()
+    {
+        _driver.Close();
+        _driver.CloseDevToolsSession();
+        _driver.Dispose();
     }
 
     /// <summary>
