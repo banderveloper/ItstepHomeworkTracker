@@ -29,15 +29,6 @@ public partial class MainWindow : Window
     {
         _defaultTextBoxBrush = UsernameTextBox.BorderBrush;
         RequiredHomeworksPercentTextBox.Text = "70";
-
-        if (!IsLogbookAvailable())
-        {
-            MessageBox.Show(
-                "Logbook is not available. Check your internet connection and VPN enabled (if you are outside the academy)",
-                "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-        }
-        
-        FileEnsurer.Ensure();
     }
 
     private void OnExitButtonClick(object sender, RoutedEventArgs e)
@@ -121,28 +112,6 @@ public partial class MainWindow : Window
 
         var passwordBox = this.FindVisualChildren<PasswordBox>().FirstOrDefault(pb => pb.Password.Length == 0);
         if (passwordBox != null) passwordBox.BorderBrush = Brushes.IndianRed;
-    }
-
-    /// <summary>
-    /// Send small http request to logbook for ensuring server available
-    /// </summary>
-    /// <returns>Is logbook http server available</returns>
-    private bool IsLogbookAvailable()
-    {
-        var request = (HttpWebRequest)HttpWebRequest.Create("https://logbook.itstep.org");
-        request.AllowAutoRedirect = false;
-        request.Method = "HEAD";
-        request.Timeout = 1000;
-
-        try
-        {
-            request.GetResponse();
-            return true;
-        }
-        catch (Exception)
-        {
-            return false;
-        }
     }
 
     protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
