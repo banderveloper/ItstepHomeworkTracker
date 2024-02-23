@@ -313,7 +313,7 @@ internal class LogbookWebDriver
     {
         string templateCode;
 
-        using (var reader = new StreamReader("./template/template.html"))
+        using (var reader = new StreamReader("./template.html"))
         {
             templateCode = reader.ReadToEnd();
         }

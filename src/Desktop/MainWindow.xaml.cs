@@ -36,6 +36,8 @@ public partial class MainWindow : Window
                 "Logbook is not available. Check your internet connection and VPN enabled (if you are outside the academy)",
                 "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
+        
+        FileEnsurer.Ensure();
     }
 
     private void OnExitButtonClick(object sender, RoutedEventArgs e)
