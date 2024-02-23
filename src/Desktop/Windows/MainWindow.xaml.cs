@@ -10,7 +10,7 @@ using System.Windows.Media;
 using ItstepHomeworkTracker.Desktop.Extensions;
 using ItstepHomeworkTracker.Library;
 
-namespace ItstepHomeworkTracker.Desktop;
+namespace ItstepHomeworkTracker.Desktop.Windows;
 
 /// <summary>
 /// Interaction logic for MainWindow.xaml
