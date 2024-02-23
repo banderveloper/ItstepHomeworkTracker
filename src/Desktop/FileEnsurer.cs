@@ -21,7 +21,7 @@ public static class FileEnsurer
         "https://drive.google.com/uc?id=1F9ThDj1h6V3F2SZfAYw2u9gFrhzSQv3c&export=download";
 
     /// <summary>
-    /// Ensure that all directories and files are exists, if not - create or download
+    /// Ensure that all directories exists, if not - create
     /// </summary>
     public static void CreateMissingDirectories()
     {
@@ -30,7 +30,7 @@ public static class FileEnsurer
     }
 
     /// <summary>
-    /// Download template.html file from mediafire hosting
+    /// Download template.html file from hosting
     /// </summary>
     public static void DownloadMissingTemplateFile()
     {
@@ -43,7 +43,7 @@ public static class FileEnsurer
     }
 
     /// <summary>
-    /// Download selenium-manager.exe from mediafire hosting
+    /// Download selenium-manager.exe from hosting
     /// </summary>
     public static void DownloadMissingSeleniumManagerFile()
     {
