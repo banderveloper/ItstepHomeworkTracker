@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Net.NetworkInformation;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -120,15 +121,26 @@ public partial class MainWindow : Window
         if (passwordBox != null) passwordBox.BorderBrush = Brushes.IndianRed;
     }
 
+    /// <summary>
+    /// Send small http request to logbook for ensuring server available
+    /// </summary>
+    /// <returns>Is logbook http server available</returns>
     private bool IsLogbookAvailable()
     {
-        var pingSender = new Ping();
-        const int timeout = 1000;
+        var request = (HttpWebRequest)HttpWebRequest.Create("https://logbook.itstep.org");
+        request.AllowAutoRedirect = false;
+        request.Method = "HEAD";
+        request.Timeout = 1000;
 
-        var pingOptions = new PingOptions(64, true);
-        var pingReply = pingSender.Send("logbook.itstep.org", timeout, "hello"u8.ToArray(), pingOptions);
-
-        return pingReply.Status == IPStatus.Success;
+        try
+        {
+            request.GetResponse();
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
     }
 
     protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
