@@ -28,7 +28,7 @@ public partial class MainWindow : Window
     private void OnLoad(object sender, RoutedEventArgs e)
     {
         _defaultTextBoxBrush = UsernameTextBox.BorderBrush;
-        RequiredHomeworksPercentTextBox.Text = "80";
+        RequiredHomeworksPercentTextBox.Text = "70";
 
         if (!IsLogbookAvailable())
         {
