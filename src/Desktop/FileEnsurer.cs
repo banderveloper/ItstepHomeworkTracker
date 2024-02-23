@@ -23,32 +23,33 @@ public static class FileEnsurer
     /// <summary>
     /// Ensure that all directories and files are exists, if not - create or download
     /// </summary>
-    public static void Ensure()
+    public static void CreateMissingDirectories()
     {
         Directory.CreateDirectory("results");
         Directory.CreateDirectory("selenium-manager/windows");
-
-        if (!File.Exists("template.html"))
-            DownloadTemplateFile();
-        
-        if(!File.Exists("selenium-manager/windows/selenium-manager.exe"))
-            DownloadSeleniumManagerFile();
     }
 
     /// <summary>
     /// Download template.html file from mediafire hosting
     /// </summary>
-    private static void DownloadTemplateFile()
+    public static void DownloadMissingTemplateFile()
     {
+        if (File.Exists("template.html"))
+            return;
+
         using var client = new WebClient();
         client.DownloadFile(_templateFileDownloadLink, "template.html");
+
     }
 
     /// <summary>
     /// Download selenium-manager.exe from mediafire hosting
     /// </summary>
-    private static void DownloadSeleniumManagerFile()
+    public static void DownloadMissingSeleniumManagerFile()
     {
+        if (File.Exists("selenium-manager/windows/selenium-manager.exe")) 
+            return;
+
         using var client = new WebClient();
         client.DownloadFile(_seleniumManagerDownloadLink, "selenium-manager/windows/selenium-manager.exe");
     }

@@ -10,7 +10,8 @@
         WindowStyle="None"
         WindowStartupLocation="CenterScreen"
         AllowsTransparency="True"
-        Background="{x:Null}">
+        Background="{x:Null}"
+        ContentRendered="OnContentRendered">
 
     <materialDesign:Card UniformCornerRadius="15" Background="{DynamicResource MaterialDesignPaper}" materialDesign:ShadowAssist.ShadowDepth="Depth4" Margin="25">
 
@@ -26,17 +27,17 @@
                     <TextBlock Text="Homeworks" FontSize="28" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0 15 0 0"/>
                 </WrapPanel>
 
-                <TextBlock Text="Loading Resources..." FontSize="17" FontWeight="SemiBold" HorizontalAlignment="Left" Margin="0 30 0 15"/>
+                <TextBlock x:Name="ProgressText" Text="Loading..." FontSize="17" FontWeight="SemiBold" HorizontalAlignment="Left" Margin="0 30 0 15"/>
 
-                <ProgressBar x:Name="progressBar" Value="0" Height="5" Width="280" IsIndeterminate="True"/>
-                
+                <ProgressBar x:Name="progressBar" Value="0" Height="5" Width="280" />
+
             </StackPanel>
 
 
             <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="200">
                 <Image Source="../Resources/itstep.jpg"/>
             </StackPanel>
-            
+
         </Grid>
 
     </materialDesign:Card>
