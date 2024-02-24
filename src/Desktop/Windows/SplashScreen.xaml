@@ -35,7 +35,7 @@
 
 
             <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="200">
-                <Image Source="../Resources/itstep.jpg"/>
+                <Image Source="../Resources/itstep.png"/>
             </StackPanel>
 
         </Grid>
