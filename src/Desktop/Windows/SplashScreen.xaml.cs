@@ -10,7 +10,7 @@ namespace ItstepHomeworkTracker.Desktop.Windows;
 public partial class SplashScreen : Window
 {
     private string _logbookUrl = "https://logbook.itstep.org";
-    private int _logbookRequestTimeout = 1000;
+    private int _logbookRequestTimeout = 2500;
 
     public SplashScreen()
     {
