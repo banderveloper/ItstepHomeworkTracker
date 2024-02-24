@@ -10,19 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Resource Include="**/*.png" />
+<!--    <Resource Exclude="**\*.xml;**\*.xsl;**\*.xslt;**\*.txt;**\*.bmp;**\*.ico;**\*.cur;**\*.gif;**\*.jpeg;**\*.jpe;**\*.jpg;**\*.png;**\*.dib;**\*.tiff;**\*.tif;**\*.inf;**\*.compositefont;**\*.otf;**\*.ttf;**\*.ttc;**\*.tte" />-->
+    <Resource Include="**\*.xml;**\*.xsl;**\*.xslt;**\*.txt;**\*.bmp;**\*.ico;**\*.cur;**\*.gif;**\*.jpeg;**\*.jpe;**\*.jpg;**\*.png;**\*.dib;**\*.tiff;**\*.tif;**\*.inf;**\*.compositefont;**\*.otf;**\*.ttf;**\*.ttc;**\*.tte" />
   </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Resources\itstep.jpg" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Resources\itstep.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
+  
   <ItemGroup>
     <PackageReference Include="MaterialDesignThemes" Version="4.8.0" />
   </ItemGroup>
