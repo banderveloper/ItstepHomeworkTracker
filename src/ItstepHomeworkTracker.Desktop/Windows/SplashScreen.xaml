@@ -11,7 +11,8 @@
         WindowStartupLocation="CenterScreen"
         AllowsTransparency="True"
         Background="{x:Null}"
-        ContentRendered="OnContentRendered">
+        ContentRendered="OnContentRendered"
+        Icon="../Resources/icon.png">
 
     <materialDesign:Card UniformCornerRadius="15" Background="{DynamicResource MaterialDesignPaper}" materialDesign:ShadowAssist.ShadowDepth="Depth4" Margin="25">
 

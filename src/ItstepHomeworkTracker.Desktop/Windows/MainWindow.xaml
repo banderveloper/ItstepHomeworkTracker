@@ -11,7 +11,8 @@
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         Background="{x:Null}"
         AllowsTransparency="True"
-        WindowStyle="None">
+        WindowStyle="None"
+        Icon="../Resources/icon.png">
 
     <materialDesign:Card UniformCornerRadius="15" Background="{DynamicResource MaterialDesignPaper}" Margin="25"
                          materialDesign:ShadowAssist.ShadowDepth="Depth4" Loaded="OnLoad">
