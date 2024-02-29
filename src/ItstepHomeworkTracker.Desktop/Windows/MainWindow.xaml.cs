@@ -18,7 +18,7 @@ namespace ItstepHomeworkTracker.Desktop.Windows;
 /// </summary>
 public partial class MainWindow : Window
 {
-    private HomeworkTracker _tracker;
+    private HomeworkTracker? _tracker;
     private Brush _defaultTextBoxBrush;
 
     public MainWindow()
@@ -36,6 +36,7 @@ public partial class MainWindow : Window
 
     private void OnExitButtonClick(object sender, RoutedEventArgs e)
     {
+        _tracker?.Shutdown();
         Application.Current.Shutdown();
     }
 

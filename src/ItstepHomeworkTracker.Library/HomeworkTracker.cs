@@ -35,8 +35,14 @@ public class HomeworkTracker
         }
         catch (Exception ex)
         {
+            _logbookDriver.Shutdown();
             OnParsingError?.Invoke(this, new HomeworkTrackerEventArgs(ex.Message));
         }
+    }
+
+    public void Shutdown()
+    {
+        _logbookDriver.Shutdown();
     }
 
     /// <summary>
