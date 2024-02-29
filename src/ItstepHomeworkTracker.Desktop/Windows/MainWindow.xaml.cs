@@ -6,7 +6,10 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using ItstepHomeworkTracker.Desktop.Extensions;
+using ItstepHomeworkTracker.Desktop.Models;
 using ItstepHomeworkTracker.Library;
+using Newtonsoft.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace ItstepHomeworkTracker.Desktop.Windows;
 
@@ -27,6 +30,8 @@ public partial class MainWindow : Window
     {
         _defaultTextBoxBrush = UsernameTextBox.BorderBrush;
         RequiredHomeworksPercentTextBox.Text = "70";
+        
+        LoadInputData();
     }
 
     private void OnExitButtonClick(object sender, RoutedEventArgs e)
@@ -42,6 +47,8 @@ public partial class MainWindow : Window
             return;
         }
 
+        SaveInputData();
+        
         _tracker = new HomeworkTracker()
             .AddCredentials(UsernameTextBox.Text, PasswordTextBox.Password)
             .AddTargetGroupName(GroupNameTextBox.Text)
@@ -110,6 +117,37 @@ public partial class MainWindow : Window
 
         var passwordBox = this.FindVisualChildren<PasswordBox>().FirstOrDefault(pb => pb.Password.Length == 0);
         if (passwordBox != null) passwordBox.BorderBrush = Brushes.IndianRed;
+    }
+
+    private void SaveInputData()
+    {
+        var inputData = new InputData
+        {
+            LogbookName = UsernameTextBox.Text,
+            GroupName = GroupNameTextBox.Text,
+            HomeworksCount = HomeworksCountTextBox.Text,
+            RequiredPercent = RequiredHomeworksPercentTextBox.Text
+        };
+        
+        File.WriteAllText("input.json", JsonSerializer.Serialize(inputData));
+    }
+
+    private void LoadInputData()
+    {
+        try
+        {
+            var json = File.ReadAllText("input.json");
+            var inputData = JsonSerializer.Deserialize<InputData>(json);
+
+            UsernameTextBox.Text = inputData?.LogbookName;
+            GroupNameTextBox.Text = inputData?.GroupName;
+            HomeworksCountTextBox.Text = inputData?.HomeworksCount;
+            RequiredHomeworksPercentTextBox.Text = inputData?.RequiredPercent;
+        }
+        catch (Exception)
+        {
+            //ignored
+        }
     }
 
     protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
